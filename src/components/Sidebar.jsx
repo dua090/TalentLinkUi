@@ -116,9 +116,9 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           {/* Profile */}
           <div className="flex items-center gap-3">
             <img
-              src={`https://ui-avatars.com/api/?name=${user?.name || "User"}`}
+              src={`https://ui-avatars.com/api/?name=${user?.name || "User"}&background=0D8ABC&color=fff&bold=true`}
               alt="profile"
-              className="w-10 h-10 rounded-full"
+              className="w-10 h-10 rounded-full border border-gray-200"
             />
             <div>
               <p className="text-sm font-semibold">

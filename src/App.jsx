@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Insights from "./pages/Insights";
+import TalentPool from "./pages/TalentPool";
 import { useAuth } from "./context/AuthContext";
 import Sidebar from "./components/Sidebar";
 
@@ -61,6 +62,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Insights />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/talent"
+              element={
+                <ProtectedRoute>
+                  <TalentPool />
                 </ProtectedRoute>
               }
             />
