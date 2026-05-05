@@ -43,12 +43,12 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   }, [darkMode]);
 
   const getClass = (path) =>
-    `flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition
-    ${
-      location.pathname === path
-        ? "bg-gray-300 dark:bg-gray-700 font-semibold"
-        : "hover:bg-gray-200 dark:hover:bg-gray-800"
-    }`;
+  `flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition
+  ${
+    location.pathname === path
+      ? "bg-blue-50 text-blue-600 font-semibold"
+      : "hover:bg-gray-100"
+  }`;
 
   return (
     <>
@@ -65,8 +65,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       {/* Sidebar */}
       <div
         className={`fixed top-0 left-0 h-screen w-64 p-4 flex flex-col justify-between 
-        bg-gray-100 text-gray-800 
-        dark:bg-gray-900 dark:text-gray-200
+        bg-white text-gray-800 border-r border-gray-200
         transform transition-transform duration-300
         ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
@@ -132,13 +131,13 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           </div>
 
           {/* Logout */}
-          <button
+        <button
             onClick={logout}
-            className="w-full bg-gray-800 text-white hover:bg-black 
-            dark:bg-red-500 dark:hover:bg-red-600 px-4 py-2 rounded"
+            className="w-full px-4 py-2 rounded-lg border border-gray-200 
+            text-gray-700 hover:border-red-300 hover:text-red-600 hover:bg-red-50 transition"
           >
             Logout
-          </button>
+      </button>
         </div>
       </div>
     </>

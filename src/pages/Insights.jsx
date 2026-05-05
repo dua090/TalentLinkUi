@@ -12,7 +12,7 @@ const Insights = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         
         {/* Skills */}
-        <div className="bg-white rounded-xl shadow p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-semibold mb-4">
             Top Skills Distribution
           </h3>
@@ -25,7 +25,7 @@ const Insights = () => {
         </div>
 
         {/* Expertise */}
-        <div className="bg-white rounded-xl shadow p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-semibold mb-4">
             Key Expertise Areas
           </h3>
