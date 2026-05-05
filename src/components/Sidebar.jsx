@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { Link, useLocation } from "react-router-dom";
 import {
   Menu,
   X,
@@ -8,12 +9,13 @@ import {
   Users,
   BarChart3,
   Sun,
-  Moon
+  Moon,
 } from "lucide-react";
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, setIsOpen }) {
   const { logout } = useAuth();
-  const [isOpen, setIsOpen] = useState(true);
+  const location = useLocation();
+
   const [user, setUser] = useState(null);
   const [darkMode, setDarkMode] = useState(true);
 
@@ -22,9 +24,6 @@ export default function Sidebar() {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       if (storedUser?.name) setUser(storedUser);
       else if (storedUser?.user) setUser(storedUser.user);
-
-      const sidebarState = localStorage.getItem("sidebar");
-      if (sidebarState) setIsOpen(sidebarState === "open");
 
       const theme = localStorage.getItem("theme");
       if (theme) setDarkMode(theme === "dark");
@@ -43,22 +42,25 @@ export default function Sidebar() {
     }
   }, [darkMode]);
 
-  const handleToggle = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    localStorage.setItem("sidebar", newState ? "open" : "closed");
-    window.dispatchEvent(new Event("sidebarToggle"));
-  };
+  const getClass = (path) =>
+    `flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition
+    ${
+      location.pathname === path
+        ? "bg-gray-300 dark:bg-gray-700 font-semibold"
+        : "hover:bg-gray-200 dark:hover:bg-gray-800"
+    }`;
 
   return (
     <>
       {/* Toggle Button */}
-      <button
-        onClick={handleToggle}
-        className="fixed top-4 left-4 z-50 bg-gray-700 text-white p-2 rounded shadow-lg hover:bg-gray-600"
+      {/* <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`fixed top-4 z-50 p-2 rounded shadow-lg transition-all
+        ${isOpen ? "left-64" : "left-4"} 
+        bg-gray-700 text-white hover:bg-gray-600`}
       >
         {isOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
+      </button> */}
 
       {/* Sidebar */}
       <div
@@ -70,31 +72,34 @@ export default function Sidebar() {
       >
         {/* Top */}
         <div>
-          <h2 className="text-xl font-bold mb-6 mt-10 text-gray-900 dark:text-white">
-            Dashboard
+          <h2 className="text-xl font-bold mb-6 mt-10">
+            TalentLink
           </h2>
 
           <ul className="space-y-2">
-            {/* Item */}
-            <li className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer 
-              hover:bg-gray-200 dark:hover:bg-gray-800 transition">
-              <Home size={18} /> Home
-            </li>
+            <Link to="/home">
+              <li className={getClass("/home")}>
+                <Home size={18} /> Home
+              </li>
+            </Link>
 
-            <li className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer 
-              hover:bg-gray-200 dark:hover:bg-gray-800 transition">
-              <Upload size={18} /> Upload Profiles
-            </li>
+            <Link to="/upload">
+              <li className={getClass("/upload")}>
+                <Upload size={18} /> Upload Profiles
+              </li>
+            </Link>
 
-            <li className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer 
-              hover:bg-gray-200 dark:hover:bg-gray-800 transition">
-              <Users size={18} /> Talent Pool
-            </li>
+            <Link to="/talent">
+              <li className={getClass("/talent")}>
+                <Users size={18} /> Talent Pool
+              </li>
+            </Link>
 
-            <li className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer 
-              hover:bg-gray-200 dark:hover:bg-gray-800 transition">
-              <BarChart3 size={18} /> Insights
-            </li>
+            <Link to="/insights">
+              <li className={getClass("/insights")}>
+                <BarChart3 size={18} /> Insights
+              </li>
+            </Link>
           </ul>
         </div>
 
@@ -114,13 +119,13 @@ export default function Sidebar() {
             <img
               src={`https://ui-avatars.com/api/?name=${user?.name || "User"}`}
               alt="profile"
-              className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-700"
+              className="w-10 h-10 rounded-full"
             />
             <div>
               <p className="text-sm font-semibold">
                 {user?.name || "User"}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500">
                 {user?.email || "user@email.com"}
               </p>
             </div>
@@ -130,7 +135,7 @@ export default function Sidebar() {
           <button
             onClick={logout}
             className="w-full bg-gray-800 text-white hover:bg-black 
-            dark:bg-red-500 dark:hover:bg-red-600 px-4 py-2 rounded transition"
+            dark:bg-red-500 dark:hover:bg-red-600 px-4 py-2 rounded"
           >
             Logout
           </button>
