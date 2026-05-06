@@ -13,16 +13,24 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
   // Get user + theme
   useEffect(() => {
-    try {
-      const storedUser = JSON.parse(localStorage.getItem("user"));
-      setUser(storedUser);
+  try {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
 
-      const theme = localStorage.getItem("theme");
-      if (theme) setDarkMode(theme === "dark");
-    } catch (err) {
-      console.error(err);
+    // New structure
+    if (storedUser?.user) {
+      setUser(storedUser.user);
     }
-  }, []);
+
+    const theme = localStorage.getItem("theme");
+
+    if (theme) {
+      setDarkMode(theme === "dark");
+    }
+
+  } catch (err) {
+    console.error(err);
+  }
+}, []);
 
   // Apply dark mode
   useEffect(() => {
@@ -97,7 +105,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         {/* Profile */}
         <div className="flex items-center gap-3">
           <img
-            src={`https://ui-avatars.com/api/?name=${user?.name || "User"}&background=0D8ABC&color=fff&bold=true`}
+            src={`https://ui-avatars.com/api/?name=${user?.name || "User"}&background=EFF6FF&color=2563EB&bold=true`}
             alt="profile"
             className="w-10 h-10 rounded-full border border-gray-200"
           />

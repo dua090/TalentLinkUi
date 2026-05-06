@@ -30,10 +30,10 @@ function App() {
 
         {/* Main Content */}
         <div
-  className={`flex-1 min-h-screen bg-[#F9FAFB] transition-all duration-300 flex items-center justify-center ${
-    user ? (isSidebarOpen ? "ml-64" : "") : ""
-  }`}
->
+          className={`flex-1 min-h-screen bg-[#F9FAFB] transition-all duration-300 ${
+            user ? (isSidebarOpen ? "ml-64" : "") : ""
+          }`}
+        >
           <Routes>
             {/* Auth */}
             <Route

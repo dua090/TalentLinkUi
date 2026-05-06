@@ -20,20 +20,22 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const res = await fetch("http://localhost:5000/api/auth/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ email, password }),
     });
 
     const data = await res.json();
 
-    if (!res.ok) throw new Error(data.msg || data.message || "Login failed");
+    if (!res.ok) {
+      throw new Error(data.message || "Login failed");
+    }
 
-    // 🔥 IMPORTANT FIX
-    setUser(data.user);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    // Save FULL response (token + user)
+    setUser(data);
 
-    // optional (recommended)
-    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data));
   };
 
   // ✅ SIGNUP
