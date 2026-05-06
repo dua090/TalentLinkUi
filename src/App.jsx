@@ -5,6 +5,7 @@ import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Insights from "./pages/Insights";
 import TalentPool from "./pages/TalentPool";
+import UploadProfile from "./pages/UploadProfile"; // ✅ ADD THIS
 import { useAuth } from "./context/AuthContext";
 import Sidebar from "./components/Sidebar";
 
@@ -24,18 +25,15 @@ function App() {
       <div className="flex">
         {/* Sidebar */}
         {user && (
-          <Sidebar
-            isOpen={isSidebarOpen}
-            setIsOpen={setIsSidebarOpen}
-          />
+          <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
         )}
 
         {/* Main Content */}
         <div
-          className={`flex-1 min-h-screen bg-[#F9FAFB] transition-all duration-300 ${
-            user ? (isSidebarOpen ? "ml-64" : "") : ""
-          }`}
-        >
+  className={`flex-1 min-h-screen bg-[#F9FAFB] transition-all duration-300 flex items-center justify-center ${
+    user ? (isSidebarOpen ? "ml-64" : "") : ""
+  }`}
+>
           <Routes>
             {/* Auth */}
             <Route
@@ -56,7 +54,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
+            <Route
+              path="/upload"
+              element={
+                <ProtectedRoute>
+                  <UploadProfile />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/insights"
               element={
