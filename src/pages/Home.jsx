@@ -1,106 +1,247 @@
-import React from "react";
-
-const suggestedCollaborators = [
-  {
-    id: 1,
-    name: "Rahul Sharma",
-    score: "92%",
-    skills: ["React", "Node.js", "AWS"],
-    description:
-      "Worked on payment system and React performance optimization",
-    avatarUrl: "https://i.pravatar.cc/150?img=11",
-  },
-  {
-    id: 2,
-    name: "Anjali Mehta",
-    score: "88%",
-    skills: ["Vue", "Node.js", "MongoDB"],
-    description: "Built scalable backend APIs and dashboards",
-    avatarUrl: "https://i.pravatar.cc/150?img=12",
-  },
-  {
-    id: 3,
-    name: "David Kim",
-    score: "85%",
-    skills: ["Python", "AI", "ML"],
-    description: "Worked on ML models and AI pipelines",
-    avatarUrl: "https://i.pravatar.cc/150?img=32",
-  },
-];
+import React, { useState } from "react";
 
 const Home = () => {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState([]);
+  const [parsed, setParsed] = useState(null);
+  const [count, setCount] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [selectedProfile, setSelectedProfile] = useState(null);
+
+  const handleSearch = async () => {
+    if (!query.trim()) {
+      setError("⚠️ Please enter a search query");
+      return;
+    }
+
+    try {
+      setError("");
+      setLoading(true);
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        "http://localhost:5000/api/search/smart-search",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ prompt: query }),
+        }
+      );
+
+      const data = await res.json();
+
+      setResults(data.candidates || []);
+      setParsed(data.parsed);
+      setCount(data.count);
+    } catch (err) {
+      setError("❌ Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#F9FAFB] p-8">
-      
-      {/* Page Title */}
-      <h2 className="text-3xl font-bold text-gray-900 mb-8">
-        Dashboard
+    <div className="p-4 sm:p-6 lg:p-10">
+      <h2 className="text-2xl sm:text-3xl font-bold mb-6">
+        AI Recruiter Dashboard
       </h2>
 
-      {/* Search Section */}
-      <div className="flex justify-center mb-16 mt-10">
-        <div className="w-full max-w-3xl">
-          <div className="flex items-center bg-white border border-gray-200 rounded-xl shadow-sm px-4 py-4">
-            <span className="text-gray-400 mr-3">🔍</span>
-            <input
-              type="text"
-              placeholder="Describe what you need help with..."
-              className="w-full outline-none text-gray-700 text-base"
-            />
-          </div>
-        </div>
+      {/* 🔍 Search */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6 max-w-3xl">
+        <input
+          type="text"
+          placeholder="React developer with 2 years experience"
+          className="flex-1 px-4 py-3 border rounded-lg outline-none"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+
+        <button
+          onClick={handleSearch}
+          disabled={loading}
+          className={`px-6 py-3 rounded-lg text-white ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+          }`}
+        >
+          {loading ? "Searching..." : "Search"}
+        </button>
       </div>
 
-      {/* Suggested Collaborators */}
-      <div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-6">
-          Suggested Collaborators
-        </h3>
+      {/* ❌ Error */}
+      {error && <p className="text-red-500 mb-4">{error}</p>}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {suggestedCollaborators.map((profile) => (
-            <div
-              key={profile.id}
-              className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition"
-            >
-              {/* Header */}
-              <div className="flex justify-between items-center mb-4">
-                <img
-                  src={profile.avatarUrl}
-                  alt={profile.name}
-                  className="w-12 h-12 rounded-full border border-gray-200"
-                />
+      {/* 🧠 Parsed */}
+      {parsed && (
+        <div className="bg-white p-4 rounded-xl shadow mb-6">
+          <h3 className="font-semibold mb-2">AI Understood:</h3>
 
-                <span className="text-sm font-semibold bg-blue-50 text-blue-600 px-3 py-1 rounded-full">
-                  {profile.score}
+          <div className="flex flex-wrap gap-2 mb-2">
+            {parsed.skills?.map((skill, i) => (
+              <span key={i} className="px-2 py-1 bg-green-100 rounded text-sm">
+                {skill}
+              </span>
+            ))}
+          </div>
+
+          <p className="text-sm text-gray-600">
+            Experience:{" "}
+            {parsed.experience !== null
+              ? `${parsed.experience} years`
+              : "Not specified"}
+          </p>
+        </div>
+      )}
+
+      {/* 📊 Count */}
+      {count !== null && !loading && (
+        <p className="mb-4 text-gray-600">{count} candidates found</p>
+      )}
+
+      {/* ⏳ Loader */}
+      {loading && (
+        <p className="text-gray-500 text-center mt-6">Loading...</p>
+      )}
+
+      {/* 📦 Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        {results.map((profile) => (
+          <div
+            key={profile._id}
+            className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition"
+          >
+            <h3 className="font-semibold text-lg">{profile.name}</h3>
+            <p className="text-sm text-gray-500">{profile.email}</p>
+
+            {/* Match */}
+            <div className="mt-3">
+              <div className="flex justify-between text-sm mb-1">
+                <span>Match Score</span>
+                <span className="font-semibold text-blue-600">
+                  {profile.matchPercentage}%
                 </span>
               </div>
 
-              {/* Name */}
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                {profile.name}
-              </h3>
-
-              {/* Skills */}
-              <div className="flex flex-wrap gap-2 mb-3">
-                {profile.skills.map((skill, i) => (
-                  <span
-                    key={i}
-                    className="px-3 py-1 bg-blue-50 text-blue-600 text-sm font-medium rounded-md"
-                  >
-                    {skill}
-                  </span>
-                ))}
+              <div className="w-full h-2 bg-gray-200 rounded-full">
+                <div
+                  className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500"
+                  style={{ width: `${profile.matchPercentage}%` }}
+                />
               </div>
+            </div>
 
-              {/* Description */}
-              <p className="text-sm text-gray-600">
-                {profile.description}
+            {/* Skills */}
+            <div className="flex flex-wrap gap-2 mt-3">
+              {profile.skills?.slice(0, 4).map((skill, i) => (
+                <span key={i} className="text-xs bg-blue-100 px-2 py-1 rounded">
+                  {skill}
+                </span>
+              ))}
+            </div>
+
+            <p className="text-sm text-gray-600 mt-2">
+              {profile.experience} yrs experience
+            </p>
+
+            {/* ✅ SEE MORE BUTTON */}
+            <button
+              onClick={() => setSelectedProfile(profile)}
+              className="mt-4 w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700"
+            >
+              See More
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* ❌ No Results */}
+      {count === 0 && !loading && (
+        <div className="text-center text-gray-400 mt-10">
+          No candidates found. Try another search.
+        </div>
+      )}
+
+      {/* 🧑‍💼 MODAL */}
+      {selectedProfile && (
+        <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex justify-center items-center p-4 z-50">
+          <div className="bg-white max-w-2xl w-full p-6 rounded-xl relative max-h-[90vh] overflow-y-auto shadow-xl">
+
+            {/* Close */}
+            <button
+              onClick={() => setSelectedProfile(null)}
+              className="absolute top-3 right-4 text-xl font-bold"
+            >
+              ✖
+            </button>
+
+            <h2 className="text-2xl font-bold mb-2">
+              {selectedProfile.name}
+            </h2>
+
+            <p className="text-gray-500">{selectedProfile.email}</p>
+            <p className="text-gray-500 mb-3">
+              📞 {selectedProfile.phone || "Not available"}
+            </p>
+
+            <p><b>Experience:</b> {selectedProfile.experience} years</p>
+            <p><b>Domain:</b> {selectedProfile.domain || "N/A"}</p>
+
+            {/* Skills */}
+            <h4 className="font-semibold mt-4">Skills</h4>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {selectedProfile.skills?.map((s, i) => (
+                <span key={i} className="bg-blue-100 px-2 py-1 text-xs rounded">
+                  {s}
+                </span>
+              ))}
+            </div>
+
+            {/* Education */}
+            <h4 className="font-semibold mt-4">Education</h4>
+            <ul className="list-disc ml-5 text-sm">
+              {selectedProfile.education?.map((edu, i) => (
+                <li key={i}>{edu}</li>
+              ))}
+            </ul>
+
+            {/* Projects */}
+            <h4 className="font-semibold mt-4">Projects</h4>
+            <ul className="list-disc ml-5 text-sm">
+              {selectedProfile.projects?.map((p, i) => (
+                <li key={i}>{p}</li>
+              ))}
+            </ul>
+
+            {/* Resume */}
+            <h4 className="font-semibold mt-4">Resume</h4>
+            {selectedProfile.resumeUrl ? (
+              <a
+                href={`http://localhost:5000/${selectedProfile.resumeUrl}`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-600 underline"
+              >
+                View Resume
+              </a>
+            ) : (
+              <p className="text-gray-400">Not available</p>
+            )}
+
+            {/* Match */}
+            <div className="mt-5">
+              <p className="font-semibold">
+                Match Score: {selectedProfile.matchPercentage}%
               </p>
             </div>
-          ))}
+
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
