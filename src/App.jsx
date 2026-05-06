@@ -130,8 +130,12 @@ function App() {
 
           {user && isMobile && (
 
-            <div className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 sticky top-0 z-40">
-
+<div className="h-16 
+  bg-white dark:bg-gray-900 
+  border-b border-gray-100 dark:border-gray-800 
+  flex items-center justify-between px-4 
+  sticky top-0 z-40"
+>
               {/* LEFT */}
 
               <div className="flex items-center gap-3">

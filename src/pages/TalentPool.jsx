@@ -5,6 +5,7 @@ const TalentPool = () => {
   const [search, setSearch] = useState("");
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
 
   // ================= FILTER STATES =================
 
@@ -16,6 +17,25 @@ const TalentPool = () => {
 
   const [selectedSkills, setSelectedSkills] =
     useState([]);
+
+  // ================= CHECK DARK MODE =================
+
+  useEffect(() => {
+    const checkDarkMode = () => {
+      const isDarkMode = document.documentElement.classList.contains("dark");
+      setDarkMode(isDarkMode);
+    };
+
+    checkDarkMode();
+
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   // ================= FETCH ALL CANDIDATES =================
 
@@ -172,8 +192,6 @@ const TalentPool = () => {
       );
     }
 
-  
-
     return (
       matchesSearch &&
       matchesExperience &&
@@ -191,141 +209,122 @@ const TalentPool = () => {
     setSelectedSkills([]);
   };
 
-       const generateMatchScore = (profile) => {
+  const generateMatchScore = (profile) => {
+    let score = 0;
 
-  let score = 0;
-
-  // ================= NORMALIZED PROFILE SKILLS =================
-
-  const normalizedProfileSkills =
-    profile.skills?.map((skill) =>
-      skill.toLowerCase().trim()
-    ) || [];
-
-  // ================= SKILL MATCH =================
-
-  if (selectedSkills.length > 0) {
-
-    const normalizedSelectedSkills =
-      selectedSkills.map((skill) =>
-        skill.toLowerCase().trim()
-      );
-
-    const matchedSkills =
-      normalizedSelectedSkills.filter((skill) =>
-        normalizedProfileSkills.includes(skill)
-      ).length;
-
-    // PERFECT MATCH
-    if (
-      matchedSkills ===
-        normalizedSelectedSkills.length &&
-      normalizedSelectedSkills.length > 0
-    ) {
-
-      return 100;
-    }
-
-    else {
-
-      score +=
-        (matchedSkills /
-          normalizedSelectedSkills.length) *
-        80;
-    }
-
-  } else {
-
-    // fallback when no filters selected
-    score += 50;
-  }
-
-  // ================= SEARCH MATCH =================
-
-  if (search.trim()) {
-
-    const hasSearchMatch =
-      normalizedProfileSkills.some((skill) =>
-        skill.includes(
-          search.toLowerCase().trim()
-        )
-      );
-
-    if (hasSearchMatch) {
-      score += 10;
-    }
-  }
-
-  // ================= EXPERIENCE =================
-
-  const experience =
-    profile.experience || 0;
-
-  if (experience >= 5) {
-    score += 10;
-  }
-
-  else if (experience >= 3) {
-    score += 7;
-  }
-
-  else {
-    score += 5;
-  }
-
-  // ================= DOMAIN MATCH =================
-
-  if (domainFilter !== "All") {
-
-    const normalizedDomainSkills =
-      domainMap[domainFilter]?.map((skill) =>
+    // ================= NORMALIZED PROFILE SKILLS =================
+    const normalizedProfileSkills =
+      profile.skills?.map((skill) =>
         skill.toLowerCase().trim()
       ) || [];
 
-    const hasDomainMatch =
-      normalizedProfileSkills.some((skill) =>
-        normalizedDomainSkills.includes(skill)
-      );
+    // ================= SKILL MATCH =================
+    if (selectedSkills.length > 0) {
+      const normalizedSelectedSkills =
+        selectedSkills.map((skill) =>
+          skill.toLowerCase().trim()
+        );
 
-    if (hasDomainMatch) {
-      score += 10;
+      const matchedSkills =
+        normalizedSelectedSkills.filter((skill) =>
+          normalizedProfileSkills.includes(skill)
+        ).length;
+
+      // PERFECT MATCH
+      if (
+        matchedSkills ===
+          normalizedSelectedSkills.length &&
+        normalizedSelectedSkills.length > 0
+      ) {
+        return 100;
+      } else {
+        score +=
+          (matchedSkills /
+            normalizedSelectedSkills.length) *
+          80;
+      }
+    } else {
+      // fallback when no filters selected
+      score += 50;
     }
-  }
 
-  return Math.min(
-    Math.round(score),
-    100
-  );
-};
+    // ================= SEARCH MATCH =================
+    if (search.trim()) {
+      const hasSearchMatch =
+        normalizedProfileSkills.some((skill) =>
+          skill.includes(
+            search.toLowerCase().trim()
+          )
+        );
+
+      if (hasSearchMatch) {
+        score += 10;
+      }
+    }
+
+    // ================= EXPERIENCE =================
+    const experience =
+      profile.experience || 0;
+
+    if (experience >= 5) {
+      score += 10;
+    } else if (experience >= 3) {
+      score += 7;
+    } else {
+      score += 5;
+    }
+
+    // ================= DOMAIN MATCH =================
+    if (domainFilter !== "All") {
+      const normalizedDomainSkills =
+        domainMap[domainFilter]?.map((skill) =>
+          skill.toLowerCase().trim()
+        ) || [];
+
+      const hasDomainMatch =
+        normalizedProfileSkills.some((skill) =>
+          normalizedDomainSkills.includes(skill)
+        );
+
+      if (hasDomainMatch) {
+        score += 10;
+      }
+    }
+
+    return Math.min(
+      Math.round(score),
+      100
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] p-8">
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-900 p-8">
 
       {/* ================= HEADER ================= */}
 
       <div className="flex items-center justify-between mb-6">
 
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
             Talent Pool
           </h2>
 
-          <p className="text-gray-500 mt-1">
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
             Discover and connect with top talent
           </p>
         </div>
 
-        <div className="px-4 py-2 bg-white border border-gray-200 rounded-xl shadow-sm text-sm font-medium text-gray-700">
+        <div className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300">
           {filteredProfiles.length} Candidates
         </div>
       </div>
 
       {/* ================= SEARCH ================= */}
 
-      <div className="flex items-center bg-white border border-gray-200 rounded-2xl shadow-sm mb-5 px-4">
+      <div className="flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm mb-5 px-4">
 
         <svg
-          className="w-5 h-5 text-gray-400 mr-3"
+          className="w-5 h-5 text-gray-400 dark:text-gray-500 mr-3"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -346,13 +345,13 @@ const TalentPool = () => {
             handleSearch(e.target.value)
           }
           autoComplete="off"
-          className="flex-1 py-4 bg-transparent outline-none text-gray-700 placeholder-gray-400"
+          className="flex-1 py-4 bg-transparent outline-none text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500"
         />
       </div>
 
       {/* ================= FILTERS ================= */}
 
-      <div className="sticky top-4 z-20 bg-white border border-gray-200 rounded-2xl shadow-sm p-5 mb-8">
+      <div className="sticky top-4 z-20 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-5 mb-8">
 
         <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
 
@@ -367,7 +366,7 @@ const TalentPool = () => {
               onChange={(e) =>
                 setExperienceFilter(e.target.value)
               }
-              className="px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-700 outline-none focus:border-blue-400"
+              className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-300 outline-none focus:border-blue-400 dark:focus:border-blue-500"
             >
               <option value="All">
                 All Experience
@@ -393,7 +392,7 @@ const TalentPool = () => {
               onChange={(e) =>
                 setDomainFilter(e.target.value)
               }
-              className="px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm text-gray-700 outline-none focus:border-blue-400"
+              className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-300 outline-none focus:border-blue-400 dark:focus:border-blue-500"
             >
               <option value="All">
                 All Domains
@@ -420,7 +419,7 @@ const TalentPool = () => {
 
             <button
               onClick={resetFilters}
-              className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 hover:bg-gray-50 transition"
+              className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               Reset Filters
             </button>
@@ -431,7 +430,7 @@ const TalentPool = () => {
 
         <div className="mt-5">
 
-          <p className="text-sm font-semibold text-gray-700 mb-3">
+          <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
             Filter by Skills
           </p>
 
@@ -449,8 +448,8 @@ const TalentPool = () => {
                   
                   ${
                     active
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100"
+                      ? "bg-blue-600 text-white border-blue-600 dark:bg-blue-500 dark:border-blue-500"
+                      : "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/50"
                   }`}
                 >
                   {skill}
@@ -463,72 +462,70 @@ const TalentPool = () => {
 
       {/* ================= LOADING ================= */}
 
-      {/* ================= LOADING ================= */}
+      {loading ? (
 
-{loading ? (
+        /* ================= SKELETON LOADING ================= */
 
-  /* ================= SKELETON LOADING ================= */
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
-  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, index) => (
+            <div
+              key={index}
+              className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 animate-pulse"
+            >
 
-      {[...Array(6)].map((_, index) => (
-        <div
-          key={index}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 animate-pulse"
-        >
+              {/* Header */}
 
-          {/* Header */}
+              <div className="flex items-center justify-between mb-6">
 
-          <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
 
-            <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-gray-200 dark:bg-gray-700"></div>
 
-              <div className="w-14 h-14 rounded-2xl bg-gray-200"></div>
+                  <div>
+                    <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                    <div className="h-3 w-24 bg-gray-100 dark:bg-gray-700 rounded"></div>
+                  </div>
+                </div>
+
+                <div className="h-8 w-16 rounded-full bg-gray-100 dark:bg-gray-700"></div>
+              </div>
+
+              {/* Skills */}
+
+              <div className="mb-6">
+
+                <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+
+                <div className="flex flex-wrap gap-2">
+
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-8 w-20 bg-gray-100 dark:bg-gray-700 rounded-lg"
+                    ></div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Projects */}
 
               <div>
-                <div className="h-4 w-32 bg-gray-200 rounded mb-2"></div>
-                <div className="h-3 w-24 bg-gray-100 rounded"></div>
+
+                <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
+
+                <div className="space-y-3">
+
+                  <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-full"></div>
+
+                  <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-4/5"></div>
+                </div>
               </div>
             </div>
-
-            <div className="h-8 w-16 rounded-full bg-gray-100"></div>
-          </div>
-
-          {/* Skills */}
-
-          <div className="mb-6">
-
-            <div className="h-4 w-16 bg-gray-200 rounded mb-4"></div>
-
-            <div className="flex flex-wrap gap-2">
-
-              {[...Array(4)].map((_, i) => (
-                <div
-                  key={i}
-                  className="h-8 w-20 bg-gray-100 rounded-lg"
-                ></div>
-              ))}
-            </div>
-          </div>
-
-          {/* Projects */}
-
-          <div>
-
-            <div className="h-4 w-20 bg-gray-200 rounded mb-4"></div>
-
-            <div className="space-y-3">
-
-              <div className="h-3 bg-gray-100 rounded w-full"></div>
-
-              <div className="h-3 bg-gray-100 rounded w-4/5"></div>
-            </div>
-          </div>
+          ))}
         </div>
-      ))}
-    </div>
 
-  ) : filteredProfiles.length > 0 ? (
+      ) : filteredProfiles.length > 0 ? (
 
         /* ================= GRID ================= */
 
@@ -537,61 +534,61 @@ const TalentPool = () => {
           {filteredProfiles.map((profile) => (
             <div
               key={profile._id}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition p-6 flex flex-col"
+              className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition p-6 flex flex-col"
             >
 
               {/* HEADER */}
 
-                  <div className="flex items-start justify-between mb-5">
+              <div className="flex items-start justify-between mb-5">
 
-                    {/* LEFT */}
+                {/* LEFT */}
 
-                    <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4">
 
-                      <div className="relative">
+                  <div className="relative">
 
-                        <img
-                          src={`https://ui-avatars.com/api/?name=${profile.name}&background=EFF6FF&color=2563EB&bold=true`}
-                          alt={profile.name}
-                          className="w-14 h-14 rounded-2xl border border-blue-100 shadow-sm"
-                        />
-                      
-                      </div>
-
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {profile.name}
-                        </h3>
-
-                        <p className="text-sm text-gray-500">
-                          {profile.experience || 0} years experience
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* MATCH SCORE */}
-
-                    <div className="flex flex-col items-end">
-
-                      <span className="text-[11px] text-gray-400 font-medium mb-1">
-                        {selectedSkills.length > 0 ||
-                          search ||
-                          domainFilter !== "All"
-                            ? "AI Match"
-                            : "Profile Strength"}
-                      </span>
-
-                      <div className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs font-semibold shadow-sm">
-                        {generateMatchScore(profile)}%
-                      </div>
-                    </div>
+                    <img
+                      src={`https://ui-avatars.com/api/?name=${profile.name}&background=${darkMode ? '1F2937' : 'EFF6FF'}&color=${darkMode ? '60A5FA' : '2563EB'}&bold=true`}
+                      alt={profile.name}
+                      className="w-14 h-14 rounded-2xl border border-blue-100 dark:border-blue-900/30 shadow-sm"
+                    />
+                  
                   </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      {profile.name}
+                    </h3>
+
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {profile.experience || 0} years experience
+                    </p>
+                  </div>
+                </div>
+
+                {/* MATCH SCORE */}
+
+                <div className="flex flex-col items-end">
+
+                  <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium mb-1">
+                    {selectedSkills.length > 0 ||
+                      search ||
+                      domainFilter !== "All"
+                        ? "AI Match"
+                        : "Profile Strength"}
+                  </span>
+
+                  <div className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs font-semibold shadow-sm">
+                    {generateMatchScore(profile)}%
+                  </div>
+                </div>
+              </div>
 
               {/* SKILLS */}
 
               <div className="mb-5">
 
-                <p className="text-sm font-semibold text-gray-700 mb-2">
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Skills
                 </p>
 
@@ -602,7 +599,7 @@ const TalentPool = () => {
                     .map((skill, i) => (
                       <span
                         key={i}
-                        className="px-3 py-1 bg-blue-50 text-blue-600 text-sm font-medium rounded-md"
+                        className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-medium rounded-md"
                       >
                         {skill}
                       </span>
@@ -613,7 +610,7 @@ const TalentPool = () => {
                       onClick={() =>
                         setSelectedCandidate(profile)
                       }
-                      className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-md transition"
+                      className="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-md transition"
                     >
                       +{profile.skills.length - 4} more
                     </button>
@@ -625,7 +622,7 @@ const TalentPool = () => {
 
               <div className="mt-auto">
 
-                <p className="text-sm font-semibold text-gray-700 mb-2">
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Projects
                 </p>
 
@@ -636,7 +633,7 @@ const TalentPool = () => {
                     .map((project, i) => (
                       <li
                         key={i}
-                        className="text-sm text-gray-600"
+                        className="text-sm text-gray-600 dark:text-gray-400"
                       >
                         • {project}
                       </li>
@@ -647,7 +644,7 @@ const TalentPool = () => {
                       onClick={() =>
                         setSelectedCandidate(profile)
                       }
-                      className="text-sm text-blue-600 font-medium hover:text-blue-700 transition"
+                      className="text-sm text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition"
                     >
                       +{profile.projects.length - 2} more projects
                     </button>
@@ -662,17 +659,17 @@ const TalentPool = () => {
 
         /* ================= EMPTY STATE ================= */
 
-        <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center shadow-sm">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-12 text-center shadow-sm">
 
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-blue-50 flex items-center justify-center text-2xl">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-2xl">
             🔍
           </div>
 
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             No candidates found
           </h3>
 
-          <p className="text-gray-500 text-sm max-w-md mx-auto">
+          <p className="text-gray-500 dark:text-gray-400 text-sm max-w-md mx-auto">
             Try adjusting the filters or searching
             with different skills.
           </p>
@@ -682,9 +679,9 @@ const TalentPool = () => {
       {/* ================= MODAL ================= */}
 
       {selectedCandidate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 dark:bg-black/50 backdrop-blur-sm p-4">
 
-          <div className="bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden">
 
             <div className="p-8 max-h-[90vh] overflow-y-auto">
 
@@ -695,17 +692,17 @@ const TalentPool = () => {
                 <div className="flex items-center gap-5">
 
                   <img
-                    src={`https://ui-avatars.com/api/?name=${selectedCandidate.name}&background=EFF6FF&color=2563EB&bold=true`}
+                    src={`https://ui-avatars.com/api/?name=${selectedCandidate.name}&background=${darkMode ? '1F2937' : 'EFF6FF'}&color=${darkMode ? '60A5FA' : '2563EB'}&bold=true`}
                     alt={selectedCandidate.name}
-                    className="w-20 h-20 rounded-3xl border border-blue-100 shadow-sm"
+                    className="w-20 h-20 rounded-3xl border border-blue-100 dark:border-blue-900/30 shadow-sm"
                   />
 
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                       {selectedCandidate.name}
                     </h2>
 
-                    <p className="text-gray-600 mt-1">
+                    <p className="text-gray-600 dark:text-gray-400 mt-1">
                       {selectedCandidate.experience || 0}+ Years Experience
                     </p>
                   </div>
@@ -715,7 +712,7 @@ const TalentPool = () => {
                   onClick={() =>
                     setSelectedCandidate(null)
                   }
-                  className="text-gray-400 hover:text-gray-700 text-3xl leading-none"
+                  className="text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-3xl leading-none"
                 >
                   ×
                 </button>
@@ -725,7 +722,7 @@ const TalentPool = () => {
 
               <div className="mb-8">
 
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Skills
                 </h3>
 
@@ -735,7 +732,7 @@ const TalentPool = () => {
                     (skill, i) => (
                       <span
                         key={i}
-                        className="px-4 py-2 bg-blue-50 text-blue-700 text-sm font-medium rounded-xl border border-blue-100"
+                        className="px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-sm font-medium rounded-xl border border-blue-100 dark:border-blue-800"
                       >
                         {skill}
                       </span>
@@ -748,7 +745,7 @@ const TalentPool = () => {
 
               <div className="mb-8">
 
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   Projects
                 </h3>
 
@@ -758,9 +755,9 @@ const TalentPool = () => {
                     (project, i) => (
                       <div
                         key={i}
-                        className="border border-gray-200 rounded-2xl p-5 bg-gray-50"
+                        className="border border-gray-200 dark:border-gray-700 rounded-2xl p-5 bg-gray-50 dark:bg-gray-900/50"
                       >
-                        <h4 className="font-semibold text-gray-900">
+                        <h4 className="font-semibold text-gray-900 dark:text-white">
                           {project}
                         </h4>
                       </div>
@@ -773,7 +770,7 @@ const TalentPool = () => {
 
               <div className="mb-8">
 
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                   Education
                 </h3>
 
@@ -783,7 +780,7 @@ const TalentPool = () => {
                     (edu, i) => (
                       <p
                         key={i}
-                        className="text-sm text-gray-700"
+                        className="text-sm text-gray-700 dark:text-gray-300"
                       >
                         🎓 {edu}
                       </p>
@@ -796,11 +793,11 @@ const TalentPool = () => {
 
               <div className="mb-8">
 
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                   Contact Information
                 </h3>
 
-                <div className="space-y-3 text-sm text-gray-700">
+                <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
 
                   <div className="flex items-center gap-2">
                     <span>📧</span>
@@ -821,13 +818,13 @@ const TalentPool = () => {
 
             {/* FOOTER */}
 
-            <div className="border-t border-gray-100 px-8 py-5 flex justify-end gap-4 bg-white">
+            <div className="border-t border-gray-100 dark:border-gray-700 px-8 py-5 flex justify-end gap-4 bg-white dark:bg-gray-800">
 
               <a
                 href={`http://localhost:5000/${selectedCandidate.resumeUrl}`}
                 target="_blank"
                 rel="noreferrer"
-                className="px-5 py-2.5 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition"
+                className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
                 View Resume
               </a>
