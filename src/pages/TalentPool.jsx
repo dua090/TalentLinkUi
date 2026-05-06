@@ -225,10 +225,6 @@ const TalentPool = () => {
                 <h4 className="font-semibold text-gray-900 mb-2">
                   {project}
                 </h4>
-
-                <p className="text-sm text-gray-600">
-                  Experienced in delivering scalable and modern software solutions.
-                </p>
               </div>
             ))}
           </div>
