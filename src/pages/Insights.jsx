@@ -4,7 +4,7 @@ import {
   Users,
   TrendingUp,
   Briefcase,
-  Search,
+ Search,
 } from "lucide-react";
 
 import {
@@ -47,6 +47,7 @@ const Insights = () => {
         setProfiles(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error(err);
+        setProfiles([]);
       }
     };
 
@@ -55,10 +56,8 @@ const Insights = () => {
 
   // ================= KPI ANALYTICS =================
 
-  // Total Profiles
   const totalProfiles = profiles.length;
 
-  // Average Experience
   const avgExperience =
     profiles.length > 0
       ? (
@@ -83,7 +82,6 @@ const Insights = () => {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 6);
 
-  // Chart Data
   const skillChartData = sortedSkills.map(
     ([skill, count]) => ({
       skill,
@@ -91,11 +89,10 @@ const Insights = () => {
     })
   );
 
-  // Most Popular Skill
   const topSkill =
     sortedSkills.length > 0
       ? sortedSkills[0][0]
-      : "N/A";
+      : "No Data";
 
   // ================= DOMAIN MAPPING =================
 
@@ -159,11 +156,10 @@ const Insights = () => {
     });
   });
 
-  // Top Domain
   const topHiringDomain =
     Object.entries(domainCounts).sort(
       (a, b) => b[1] - a[1]
-    )[0]?.[0] || "N/A";
+    )[0]?.[0] || "No Data";
 
   // ================= EXPERIENCE BREAKDOWN =================
 
@@ -297,7 +293,11 @@ const Insights = () => {
 
         <KpiCard
           title="Top Hiring Domain"
-          value={topHiringDomain.replace("_", " & ")}
+          value={
+            topHiringDomain !== "No Data"
+              ? topHiringDomain.replace("_", " & ")
+              : "No Data"
+          }
           icon={
             <Search
               className="text-purple-600"
@@ -314,7 +314,8 @@ const Insights = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
 
-        {/* Skill Distribution */}
+        {/* ================= SKILL CHART ================= */}
+
         <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
 
           <div className="mb-6">
@@ -329,28 +330,39 @@ const Insights = () => {
 
           <div className="h-[320px]">
 
-            <ResponsiveContainer width="100%" height="100%">
+            {skillChartData.length > 0 ? (
 
-              <BarChart data={skillChartData}>
+              <ResponsiveContainer width="100%" height="100%">
 
-                <XAxis dataKey="skill" />
+                <BarChart data={skillChartData}>
 
-                <YAxis />
+                  <XAxis dataKey="skill" />
 
-                <Tooltip />
+                  <YAxis />
 
-                <Bar
-                  dataKey="count"
-                  radius={[8, 8, 0, 0]}
-                  fill="#3B82F6"
-                />
-              </BarChart>
+                  <Tooltip />
 
-            </ResponsiveContainer>
+                  <Bar
+                    dataKey="count"
+                    radius={[8, 8, 0, 0]}
+                    fill="#3B82F6"
+                  />
+
+                </BarChart>
+
+              </ResponsiveContainer>
+
+            ) : (
+
+              <EmptyState text="No skill analytics available yet" />
+
+            )}
+
           </div>
         </div>
 
-        {/* Experience Breakdown */}
+        {/* ================= EXPERIENCE CHART ================= */}
+
         <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
 
           <div className="mb-6">
@@ -365,33 +377,42 @@ const Insights = () => {
 
           <div className="h-[320px] flex items-center justify-center">
 
-            <ResponsiveContainer width="100%" height="100%">
+            {totalProfiles > 0 ? (
 
-              <PieChart>
+              <ResponsiveContainer width="100%" height="100%">
 
-                <Pie
-                  data={experienceData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  dataKey="value"
-                  label
-                >
+                <PieChart>
 
-                  {experienceData.map((entry, index) => (
-                    <Cell
-                      key={index}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
+                  <Pie
+                    data={experienceData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    dataKey="value"
+                    label
+                  >
 
-                </Pie>
+                    {experienceData.map((entry, index) => (
+                      <Cell
+                        key={index}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
 
-                <Tooltip />
+                  </Pie>
 
-              </PieChart>
+                  <Tooltip />
 
-            </ResponsiveContainer>
+                </PieChart>
+
+              </ResponsiveContainer>
+
+            ) : (
+
+              <EmptyState text="No experience analytics available yet" />
+
+            )}
+
           </div>
         </div>
       </div>
@@ -400,7 +421,8 @@ const Insights = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
-        {/* Expertise Areas */}
+        {/* ================= EXPERTISE AREAS ================= */}
+
         <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm xl:col-span-2">
 
           <h3 className="text-xl font-semibold text-gray-900 mb-6">
@@ -409,20 +431,31 @@ const Insights = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-            {expertiseAreas.map(([domain, count], index) => (
+            {expertiseAreas.length > 0 ? (
 
-              <Expertise
-                key={index}
-                title={domain.replace("_", " & ")}
-                desc={`${count} matching technical skills identified across candidate profiles`}
-              />
+              expertiseAreas.map(([domain, count], index) => (
 
-            ))}
+                <Expertise
+                  key={index}
+                  title={domain.replace("_", " & ")}
+                  desc={`${count} matching technical skills identified across candidate profiles`}
+                />
+
+              ))
+
+            ) : (
+
+              <div className="col-span-3">
+                <EmptyState text="No expertise insights available yet" />
+              </div>
+
+            )}
 
           </div>
         </div>
 
-        {/* AI Recommendation */}
+        {/* ================= AI RECOMMENDATION ================= */}
+
         <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-6 shadow-sm text-white">
 
           <p className="text-sm opacity-80 mb-2">
@@ -430,11 +463,19 @@ const Insights = () => {
           </p>
 
           <h3 className="text-2xl font-bold leading-snug mb-4">
-            {topHiringDomain.replace("_", " & ")} talent demand is growing rapidly.
+
+            {totalProfiles > 0
+              ? `${topHiringDomain.replace("_", " & ")} talent demand is growing rapidly.`
+              : "AI insights will appear once candidate data is available."}
+
           </h3>
 
           <p className="text-sm opacity-90 leading-relaxed">
-            {aiInsight}
+
+            {totalProfiles > 0
+              ? aiInsight
+              : "Upload candidate resumes to generate hiring intelligence and talent insights."}
+
           </p>
 
           <div className="mt-6">
@@ -498,6 +539,16 @@ const Expertise = ({ title, desc }) => (
 
     <p className="text-sm text-gray-500 leading-relaxed">
       {desc}
+    </p>
+  </div>
+);
+
+// ================= EMPTY STATE =================
+
+const EmptyState = ({ text }) => (
+  <div className="h-full flex items-center justify-center">
+    <p className="text-sm text-gray-400">
+      {text}
     </p>
   </div>
 );
