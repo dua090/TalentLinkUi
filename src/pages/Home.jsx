@@ -18,8 +18,8 @@ const Home = () => {
     try {
       setError("");
       setLoading(true);
-      const token = localStorage.getItem("token");
-
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const token = storedUser?.token;
       const res = await fetch(
         "http://localhost:5000/api/search/smart-search",
         {
