@@ -1,6 +1,6 @@
 # TalentLink AI 🚀
 
-TalentLink AI is a modern, AI-powered collaboration platform designed to seamlessly connect teams and individuals based on skills, project needs, and experience. It features a clean, minimal SaaS dashboard aesthetic inspired by industry-leading tools like Linear, Notion, and Vercel.
+TalentLink AI is a modern, AI-powered collaboration platform designed to seamlessly connect teams and individuals based on skills, project needs, and experience. It features a clean, minimal SaaS dashboard.
 
 ## ✨ Features
 
