@@ -340,7 +340,27 @@ const Insights = () => {
 
                   <YAxis />
 
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                        backgroundColor: "#FFFFFF",
+                        border: "1px solid #E5E7EB",
+                        borderRadius: "16px",
+                        boxShadow:
+                        "0 10px 30px rgba(0,0,0,0.08)",
+                        padding: "10px 14px",
+                    }}
+                    labelStyle={{
+                        color: "#111827",
+                        fontWeight: 600,
+                    }}
+                    itemStyle={{
+                        color: "#2563EB",
+                        fontWeight: 500,
+                    }}
+                    cursor={{
+                        fill: "rgba(59,130,246,0.06)",
+                    }}
+                    />
 
                   <Bar
                     dataKey="count"
