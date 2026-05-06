@@ -27,15 +27,18 @@ export default function UploadProfile() {
 
   // ================= DRAG HANDLERS =================
   const handleDragOver = (e) => {
+    if (loading) return;
     e.preventDefault();
     setDragActive(true);
   };
 
   const handleDragLeave = () => {
+    if (loading) return;
     setDragActive(false);
   };
 
   const handleDrop = (e) => {
+    if (loading) return;
     e.preventDefault();
     setDragActive(false);
 
@@ -99,8 +102,24 @@ export default function UploadProfile() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-900 p-4 sm:p-6 lg:p-8">
+    <div className="relative min-h-screen bg-[#F9FAFB] dark:bg-gray-900 p-4 sm:p-6 lg:p-8">
 
+      {/* ================= LOADING OVERLAY ================= */}
+      {loading && (
+        <div className="absolute inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white dark:bg-gray-800 px-8 py-6 rounded-2xl shadow-lg flex flex-col items-center gap-4">
+            
+            {/* Spinner */}
+            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+
+            <p className="text-gray-800 dark:text-white font-medium">
+              Uploading...
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ================= HEADER ================= */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           Upload Profiles
@@ -113,7 +132,9 @@ export default function UploadProfile() {
       <div className="max-w-3xl">
         <form
           onSubmit={handleUpload}
-          className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl shadow-sm overflow-hidden"
+          className={`bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl shadow-sm overflow-hidden ${
+            loading ? "pointer-events-none opacity-60" : ""
+          }`}
         >
           {/* DROP AREA */}
           <div className="p-6 sm:p-8">
@@ -163,6 +184,7 @@ export default function UploadProfile() {
               <input
                 type="file"
                 accept="application/pdf"
+                disabled={loading}
                 onChange={(e) => {
                   const selected = e.target.files[0];
                   if (selected && selected.type !== "application/pdf") {
