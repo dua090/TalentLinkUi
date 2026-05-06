@@ -4,7 +4,7 @@ import {
   Users,
   TrendingUp,
   Briefcase,
- Search,
+  Search,
 } from "lucide-react";
 
 import {
@@ -21,6 +21,26 @@ import {
 
 const Insights = () => {
   const [profiles, setProfiles] = useState([]);
+  const [darkMode, setDarkMode] = useState(false);
+
+  // ================= CHECK DARK MODE =================
+
+  useEffect(() => {
+    const checkDarkMode = () => {
+      const isDarkMode = document.documentElement.classList.contains("dark");
+      setDarkMode(isDarkMode);
+    };
+
+    checkDarkMode();
+
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   // ================= FETCH CANDIDATES =================
 
@@ -144,15 +164,11 @@ const Insights = () => {
 
   profiles.forEach((profile) => {
     profile.skills?.forEach((skill) => {
-
       Object.keys(domainMap).forEach((domain) => {
-
         if (domainMap[domain].includes(skill)) {
           domainCounts[domain]++;
         }
-
       });
-
     });
   });
 
@@ -233,17 +249,54 @@ const Insights = () => {
       "Candidate distribution is balanced across multiple technical domains.";
   }
 
+  // ================= CUSTOM TOOLTIP FOR CHARTS =================
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-lg">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+            {label}
+          </p>
+          <p className="text-sm text-blue-600 dark:text-blue-400">
+            Count: {payload[0].value}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const CustomPieTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-lg">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">
+            {payload[0].name}
+          </p>
+          <p className="text-sm text-blue-600 dark:text-blue-400">
+            Count: {payload[0].value}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {((payload[0].value / totalProfiles) * 100).toFixed(1)}% of total
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
-    <div className="min-h-screen bg-[#F9FAFB] p-8">
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-900 p-8">
 
       {/* ================= HEADER ================= */}
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           Insights Dashboard
         </h1>
 
-        <p className="text-gray-500 mt-2">
+        <p className="text-gray-500 dark:text-gray-400 mt-2">
           AI-powered talent analytics and hiring intelligence
         </p>
       </div>
@@ -256,11 +309,12 @@ const Insights = () => {
           title="Total Profiles"
           value={totalProfiles}
           icon={
-            <Users className="text-blue-600" size={22} />
+            <Users className="text-blue-600 dark:text-blue-400" size={22} />
           }
           badge="Active"
-          iconBg="bg-blue-50"
-          badgeStyle="bg-green-50 text-green-600"
+          iconBg="bg-blue-50 dark:bg-blue-900/30"
+          badgeStyle="bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400"
+          darkMode={darkMode}
         />
 
         <KpiCard
@@ -268,13 +322,14 @@ const Insights = () => {
           value={topSkill}
           icon={
             <TrendingUp
-              className="text-indigo-600"
+              className="text-indigo-600 dark:text-indigo-400"
               size={22}
             />
           }
           badge="Trending"
-          iconBg="bg-indigo-50"
-          badgeStyle="bg-blue-50 text-blue-600"
+          iconBg="bg-indigo-50 dark:bg-indigo-900/30"
+          badgeStyle="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
+          darkMode={darkMode}
         />
 
         <KpiCard
@@ -282,13 +337,14 @@ const Insights = () => {
           value={`${avgExperience} yrs`}
           icon={
             <Briefcase
-              className="text-orange-500"
+              className="text-orange-500 dark:text-orange-400"
               size={22}
             />
           }
           badge="Experience"
-          iconBg="bg-orange-50"
-          badgeStyle="bg-orange-50 text-orange-600"
+          iconBg="bg-orange-50 dark:bg-orange-900/30"
+          badgeStyle="bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400"
+          darkMode={darkMode}
         />
 
         <KpiCard
@@ -300,13 +356,14 @@ const Insights = () => {
           }
           icon={
             <Search
-              className="text-purple-600"
+              className="text-purple-600 dark:text-purple-400"
               size={22}
             />
           }
           badge="AI Insight"
-          iconBg="bg-purple-50"
-          badgeStyle="bg-purple-50 text-purple-600"
+          iconBg="bg-purple-50 dark:bg-purple-900/30"
+          badgeStyle="bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
+          darkMode={darkMode}
         />
       </div>
 
@@ -316,14 +373,14 @@ const Insights = () => {
 
         {/* ================= SKILL CHART ================= */}
 
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm">
 
           <div className="mb-6">
-            <h3 className="text-xl font-semibold text-gray-900">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
               Top Skills Distribution
             </h3>
 
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Most common skills across candidates
             </p>
           </div>
@@ -336,11 +393,18 @@ const Insights = () => {
 
                 <BarChart data={skillChartData}>
 
-                  <XAxis dataKey="skill" />
+                  <XAxis 
+                    dataKey="skill" 
+                    tick={{ fill: darkMode ? '#9CA3AF' : '#6B7280' }}
+                    stroke={darkMode ? '#374151' : '#E5E7EB'}
+                  />
 
-                  <YAxis />
+                  <YAxis 
+                    tick={{ fill: darkMode ? '#9CA3AF' : '#6B7280' }}
+                    stroke={darkMode ? '#374151' : '#E5E7EB'}
+                  />
 
-                  <Tooltip />
+                  <Tooltip content={<CustomTooltip />} />
 
                   <Bar
                     dataKey="count"
@@ -354,7 +418,7 @@ const Insights = () => {
 
             ) : (
 
-              <EmptyState text="No skill analytics available yet" />
+              <EmptyState text="No skill analytics available yet" darkMode={darkMode} />
 
             )}
 
@@ -363,14 +427,14 @@ const Insights = () => {
 
         {/* ================= EXPERIENCE CHART ================= */}
 
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm">
 
           <div className="mb-6">
-            <h3 className="text-xl font-semibold text-gray-900">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
               Experience Breakdown
             </h3>
 
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Candidate experience distribution
             </p>
           </div>
@@ -389,7 +453,8 @@ const Insights = () => {
                     cy="50%"
                     outerRadius={100}
                     dataKey="value"
-                    label
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    labelLine={true}
                   >
 
                     {experienceData.map((entry, index) => (
@@ -401,7 +466,7 @@ const Insights = () => {
 
                   </Pie>
 
-                  <Tooltip />
+                  <Tooltip content={<CustomPieTooltip />} />
 
                 </PieChart>
 
@@ -409,7 +474,7 @@ const Insights = () => {
 
             ) : (
 
-              <EmptyState text="No experience analytics available yet" />
+              <EmptyState text="No experience analytics available yet" darkMode={darkMode} />
 
             )}
 
@@ -423,9 +488,9 @@ const Insights = () => {
 
         {/* ================= EXPERTISE AREAS ================= */}
 
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm xl:col-span-2">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm xl:col-span-2">
 
-          <h3 className="text-xl font-semibold text-gray-900 mb-6">
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
             Key Expertise Areas
           </h3>
 
@@ -439,6 +504,7 @@ const Insights = () => {
                   key={index}
                   title={domain.replace("_", " & ")}
                   desc={`${count} matching technical skills identified across candidate profiles`}
+                  darkMode={darkMode}
                 />
 
               ))
@@ -446,7 +512,7 @@ const Insights = () => {
             ) : (
 
               <div className="col-span-3">
-                <EmptyState text="No expertise insights available yet" />
+                <EmptyState text="No expertise insights available yet" darkMode={darkMode} />
               </div>
 
             )}
@@ -500,8 +566,9 @@ const KpiCard = ({
   badge,
   iconBg,
   badgeStyle,
+  darkMode,
 }) => (
-  <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition">
+  <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm hover:shadow-md transition">
 
     <div className="flex items-center justify-between mb-5">
 
@@ -518,11 +585,11 @@ const KpiCard = ({
       </span>
     </div>
 
-    <p className="text-sm text-gray-500 mb-2">
+    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
       {title}
     </p>
 
-    <h2 className="text-3xl font-bold text-gray-900">
+    <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
       {value}
     </h2>
   </div>
@@ -530,14 +597,14 @@ const KpiCard = ({
 
 // ================= EXPERTISE CARD =================
 
-const Expertise = ({ title, desc }) => (
-  <div className="p-5 rounded-2xl bg-gray-50 border border-gray-100 hover:border-blue-100 transition">
+const Expertise = ({ title, desc, darkMode }) => (
+  <div className="p-5 rounded-2xl bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-700 hover:border-blue-100 dark:hover:border-blue-900/50 transition">
 
-    <h4 className="font-semibold text-gray-900 mb-2">
+    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
       {title}
     </h4>
 
-    <p className="text-sm text-gray-500 leading-relaxed">
+    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
       {desc}
     </p>
   </div>
@@ -545,9 +612,9 @@ const Expertise = ({ title, desc }) => (
 
 // ================= EMPTY STATE =================
 
-const EmptyState = ({ text }) => (
+const EmptyState = ({ text, darkMode }) => (
   <div className="h-full flex items-center justify-center">
-    <p className="text-sm text-gray-400">
+    <p className="text-sm text-gray-400 dark:text-gray-500">
       {text}
     </p>
   </div>

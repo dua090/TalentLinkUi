@@ -46,54 +46,80 @@ export default function UploadProfile() {
     }
   };
 
-return (
-  <div className="min-h-screen w-full bg-gray-100 flex justify-center items-start sm:items-center px-4 sm:px-6 lg:px-8 py-6">
-    
-    <div className="w-full max-w-2xl">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center">
-        Upload Resume
-      </h1>
-
-      <form
-        onSubmit={handleUpload}
-        className="bg-white p-5 sm:p-8 rounded-2xl shadow-lg flex flex-col items-center w-full"
-      >
-        {/* Upload Box */}
-        <label className="w-full border-2 border-dashed border-gray-300 rounded-xl p-6 sm:p-10 text-center cursor-pointer hover:border-blue-500 transition">
-          
-          <p className="text-gray-600 text-sm sm:text-base break-words">
-            {file ? file.name : "Click to upload"}
-          </p>
-
-          <p className="text-xs text-gray-400 mt-2">
-            PDF
-          </p>
-
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            onChange={(e) => setFile(e.target.files[0])}
-            className="hidden"
-          />
-        </label>
-
-        {/* Button */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-6 w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition text-sm sm:text-base"
+  return (
+    <div className="min-h-screen w-full 
+      bg-gray-100 dark:bg-gray-900 
+      flex justify-center items-start sm:items-center 
+      px-4 sm:px-6 lg:px-8 py-6"
+    >
+      <div className="w-full max-w-2xl">
+        
+        <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center
+          text-gray-900 dark:text-white"
         >
-          {loading ? "Uploading..." : "Upload"}
-        </button>
+          Upload Resume
+        </h1>
 
-        {/* Message */}
-        {msg && (
-          <p className="mt-4 text-sm text-center break-words">
-            {msg}
-          </p>
-        )}
-      </form>
+        <form
+          onSubmit={handleUpload}
+          className="bg-white dark:bg-gray-800 
+          p-5 sm:p-8 rounded-2xl shadow-lg 
+          flex flex-col items-center w-full"
+        >
+          {/* Upload Box */}
+          <label
+            className="w-full border-2 border-dashed 
+            border-gray-300 dark:border-gray-600 
+            rounded-xl p-6 sm:p-10 text-center cursor-pointer 
+            hover:border-blue-500 dark:hover:border-blue-400 
+            transition"
+          >
+            <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base break-words">
+              {file ? file.name : "Click to upload or drag & drop"}
+            </p>
+
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+              PDF, DOC, DOCX
+            </p>
+
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={(e) => setFile(e.target.files[0])}
+              className="hidden"
+            />
+          </label>
+
+          {/* Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className={`mt-6 w-full py-2.5 rounded-lg text-sm sm:text-base transition
+              ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }
+              text-white`}
+          >
+            {loading ? "Uploading..." : "Upload"}
+          </button>
+
+          {/* Message */}
+          {msg && (
+            <p
+              className={`mt-4 text-sm text-center break-words
+              ${
+                msg.includes("❌")
+                  ? "text-red-500"
+                  : "text-green-500"
+              }`}
+            >
+              {msg}
+            </p>
+          )}
+        </form>
+      </div>
     </div>
-  </div>
-);
+  );
 }
