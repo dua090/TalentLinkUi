@@ -209,7 +209,7 @@ const CandidateRecommendationModal = ({
               <Sparkles size={24} />
 
               <h3 className="text-2xl font-bold">
-                AI Match Insights
+                Match Insights
               </h3>
             </div>
 

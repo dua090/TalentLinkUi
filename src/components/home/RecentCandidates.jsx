@@ -5,6 +5,11 @@ import {
   useState,
 } from "react";
 
+import {
+  Sparkles,
+  UserRound,
+} from "lucide-react";
+
 const RecentCandidates = () => {
 
   const [
@@ -107,6 +112,7 @@ const RecentCandidates = () => {
   };
 
   return (
+
     <div>
 
       {/* ================= HEADER ================= */}
@@ -118,7 +124,7 @@ const RecentCandidates = () => {
         </h2>
 
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Latest uploaded candidate profiles
+          Latest uploaded and manually added candidate profiles
         </p>
       </div>
 
@@ -140,77 +146,109 @@ const RecentCandidates = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
 
           {candidates.map(
-            (candidate) => (
+            (candidate) => {
 
-              <div
-                key={candidate._id}
-                className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl p-5 hover:shadow-md transition flex flex-col"
-              >
+              const isAIProfile =
+                candidate.source === "ai";
 
-                {/* ================= HEADER ================= */}
+              return (
 
-                <div className="flex items-center gap-4 mb-5">
+                <div
+                  key={candidate._id}
+                  className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl p-5 hover:shadow-md transition flex flex-col"
+                >
 
-                  <img
-                    src={`https://ui-avatars.com/api/?name=${candidate.name}&background=EFF6FF&color=2563EB&bold=true`}
-                    alt={candidate.name}
-                    className="w-14 h-14 rounded-2xl"
-                  />
+                  {/* ================= HEADER ================= */}
 
-                  <div>
+                  <div className="flex items-center gap-4 mb-5">
 
-                    <h3 className="font-semibold text-gray-900 dark:text-white">
-                      {candidate.name}
-                    </h3>
+                    <img
+                      src={`https://ui-avatars.com/api/?name=${candidate.name}&background=EFF6FF&color=2563EB&bold=true`}
+                      alt={candidate.name}
+                      className="w-14 h-14 rounded-2xl"
+                    />
 
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {candidate.experience || 0} years
-                    </p>
+                    <div className="flex-1 min-w-0">
+
+                      <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                        {candidate.name}
+                      </h3>
+
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {candidate.experience || 0} years
+                      </p>
+
+                      {/* ================= SOURCE BADGE ================= */}
+
+                      <div className="mt-2">
+
+                        {isAIProfile ? (
+
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-[11px] font-medium">
+
+                            <Sparkles size={11} />
+
+                            AI Parsed
+
+                          </div>
+
+                        ) : (
+
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-[11px] font-medium">
+
+                            <UserRound size={11} />
+
+                            Manual Entry
+
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                {/* ================= SKILLS ================= */}
+                  {/* ================= SKILLS ================= */}
 
-                <div className="flex flex-wrap gap-2 mb-5 min-h-[68px]">
+                  <div className="flex flex-wrap gap-2 mb-5 min-h-[68px]">
 
-                  {candidate.skills
-                    ?.slice(0, 3)
-                    .map((skill) => (
+                    {candidate.skills
+                      ?.slice(0, 3)
+                      .map((skill) => (
+
+                        <span
+                          key={skill}
+                          className="px-3 py-1 h-fit bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs rounded-lg font-medium"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+
+                    {candidate.skills?.length > 3 && (
 
                       <span
-                        key={skill}
-                        className="px-3 py-1 h-fit bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs rounded-lg font-medium"
+                        className="px-3 py-1 h-fit bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-lg font-medium"
                       >
-                        {skill}
+                        +{candidate.skills.length - 3} more
                       </span>
-                    ))}
-
-                  {candidate.skills?.length > 3 && (
-
-                    <span
-                      className="px-3 py-1 h-fit bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-lg font-medium"
-                    >
-                      +{candidate.skills.length - 3} more
-                    </span>
-                  )}
-                </div>
-
-                {/* ================= FOOTER ================= */}
-
-                <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-
-                  <span className="text-xs text-gray-400 dark:text-gray-500">
-                    Added on
-                  </span>
-
-                  <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                    {formatDate(
-                      candidate.createdAt
                     )}
-                  </span>
+                  </div>
+
+                  {/* ================= FOOTER ================= */}
+
+                  <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+
+                    <span className="text-xs text-gray-400 dark:text-gray-500">
+                      Added on
+                    </span>
+
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                      {formatDate(
+                        candidate.createdAt
+                      )}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            )
+              );
+            }
           )}
         </div>
       )}

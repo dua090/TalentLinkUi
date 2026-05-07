@@ -5,7 +5,7 @@
 TalentLink AI is an AI-powered recruitment platform that helps recruiters upload resumes, search candidates using natural language queries, analyze hiring insights, and manage talent efficiently.
 
 The platform provides intelligent candidate discovery, AI-powered match insights, analytics dashboards, and resume management in a modern recruiter-focused interface.
-
+    
 ---
 
 # Features

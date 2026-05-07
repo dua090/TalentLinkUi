@@ -24,7 +24,7 @@ const CandidateCard = ({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition p-6 flex flex-col">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 animate-fadeIn p-6 flex flex-col">
 
       {/* ================= HEADER ================= */}
 

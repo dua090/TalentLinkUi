@@ -1,3 +1,10 @@
+// src/components/talent/CandidateCard.jsx
+
+import {
+  Sparkles,
+  UserRound,
+} from "lucide-react";
+
 const CandidateCard = ({
   profile,
   darkMode,
@@ -7,6 +14,12 @@ const CandidateCard = ({
   generateMatchScore,
   setSelectedCandidate,
 }) => {
+
+  const matchScore =
+    generateMatchScore(profile);
+
+  const isAIProfile =
+    profile.source === "ai";
 
   return (
 
@@ -19,6 +32,8 @@ const CandidateCard = ({
         {/* LEFT */}
 
         <div className="flex items-center gap-4">
+
+          {/* AVATAR */}
 
           <div className="relative">
 
@@ -37,15 +52,55 @@ const CandidateCard = ({
             />
           </div>
 
+          {/* INFO */}
+
           <div>
 
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {profile.name}
-            </h3>
+            {/* CLICKABLE NAME */}
+
+            <button
+              onClick={() =>
+                setSelectedCandidate(profile)
+              }
+              className="text-left"
+            >
+
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition">
+
+                {profile.name}
+
+              </h3>
+            </button>
 
             <p className="text-sm text-gray-500 dark:text-gray-400">
               {profile.experience || 0} years experience
             </p>
+
+            {/* PROFILE SOURCE */}
+
+            <div className="mt-2">
+
+              {isAIProfile ? (
+
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-[11px] font-medium">
+
+                  <Sparkles size={12} />
+
+                  AI Parsed
+
+                </div>
+
+              ) : (
+
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-[11px] font-medium">
+
+                  <UserRound size={12} />
+
+                  Manual Entry
+
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -59,7 +114,7 @@ const CandidateCard = ({
             search ||
             domainFilter !== "All"
 
-              ? "AI Match"
+              ? "Match Score"
 
               : "Profile Strength"}
 
@@ -67,7 +122,7 @@ const CandidateCard = ({
 
           <div className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs font-semibold shadow-sm">
 
-            {generateMatchScore(profile)}%
+            {matchScore}%
 
           </div>
         </div>

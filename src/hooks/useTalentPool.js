@@ -15,6 +15,8 @@ import generateMatchScoreUtil from "../utils/generateMatchScore";
 
 const useTalentPool = () => {
 
+  // ================= STATES =================
+
   const [profiles, setProfiles] =
     useState([]);
 
@@ -39,7 +41,7 @@ const useTalentPool = () => {
     setSelectedSkills,
   ] = useState([]);
 
-  // ================= FETCH =================
+  // ================= FETCH CANDIDATES =================
 
   useEffect(() => {
 
@@ -98,27 +100,54 @@ const useTalentPool = () => {
 
   }, []);
 
-  // ================= SKILLS =================
+  // ================= TOP SKILLS =================
+  // DYNAMICALLY GENERATED FROM CANDIDATE DATA
 
   const allSkills =
     useMemo(() => {
 
-      const skills =
-        new Set();
+      const skillFrequency = {};
 
       profiles.forEach(
         (profile) => {
 
           profile.skills?.forEach(
             (skill) => {
-              skills.add(skill);
+
+              skillFrequency[
+                skill
+              ] =
+
+                (
+                  skillFrequency[
+                    skill
+                  ] || 0
+                ) + 1;
             }
           );
         }
       );
 
-      return Array.from(skills)
-        .slice(0, 12);
+      return Object.entries(
+        skillFrequency
+      )
+
+        // SORT BY MOST COMMON
+
+        .sort(
+          (a, b) =>
+            b[1] - a[1]
+        )
+
+        // TOP 12 SKILLS
+
+        .slice(0, 12)
+
+        // RETURN ONLY SKILL NAME
+
+        .map(
+          ([skill]) => skill
+        );
 
     }, [profiles]);
 
@@ -147,12 +176,26 @@ const useTalentPool = () => {
       []
     );
 
-  // ================= FILTERED PROFILES =================
+  // ================= ACTIVE FILTERS =================
+
+  const hasActiveFilters =
+
+    search.trim() ||
+
+    selectedSkills.length > 0 ||
+
+    domainFilter !== "All" ||
+
+    experienceFilter !== "All";
+
+  // ================= FILTER + SORT =================
 
   const filteredProfiles =
-    useMemo(
-      () =>
+    useMemo(() => {
 
+      // FILTER PROFILES
+
+      const filtered =
         filterProfiles({
 
           profiles,
@@ -166,16 +209,73 @@ const useTalentPool = () => {
           selectedSkills,
 
           domainMap,
-        }),
+        });
 
-      [
-        profiles,
-        search,
-        experienceFilter,
-        domainFilter,
-        selectedSkills,
-      ]
-    );
+      // SORT PROFILES
+
+      return [...filtered].sort(
+        (a, b) => {
+
+          // ================= FILTER MODE =================
+          // SORT BY MATCH SCORE
+
+          if (hasActiveFilters) {
+
+            const scoreA =
+              generateMatchScoreUtil({
+
+                profile: a,
+
+                selectedSkills,
+
+                search,
+
+                domainFilter,
+
+                domainMap,
+              });
+
+            const scoreB =
+              generateMatchScoreUtil({
+
+                profile: b,
+
+                selectedSkills,
+
+                search,
+
+                domainFilter,
+
+                domainMap,
+              });
+
+            return scoreB - scoreA;
+          }
+
+          // ================= DEFAULT MODE =================
+          // SORT BY LATEST
+
+          return (
+            new Date(b.createdAt) -
+            new Date(a.createdAt)
+          );
+        }
+      );
+
+    }, [
+
+      profiles,
+
+      search,
+
+      experienceFilter,
+
+      domainFilter,
+
+      selectedSkills,
+
+      hasActiveFilters,
+    ]);
 
   // ================= MATCH SCORE =================
 
@@ -203,7 +303,7 @@ const useTalentPool = () => {
       ]
     );
 
-  // ================= RESET =================
+  // ================= RESET FILTERS =================
 
   const resetFilters =
     () => {
@@ -220,6 +320,8 @@ const useTalentPool = () => {
 
       setSelectedSkills([]);
     };
+
+  // ================= RETURN =================
 
   return {
 
@@ -247,6 +349,8 @@ const useTalentPool = () => {
     resetFilters,
 
     generateMatchScore,
+
+    hasActiveFilters,
   };
 };
 

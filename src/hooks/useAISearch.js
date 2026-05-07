@@ -30,11 +30,11 @@ const useAISearch = () => {
   ) => {
 
     const finalQuery =
-      customQuery || query;
+      typeof customQuery === "string"
+        ? customQuery
+        : query;
 
-    if (
-      !finalQuery.trim()
-    ) {
+    if (!finalQuery?.trim()) {
       return;
     }
 

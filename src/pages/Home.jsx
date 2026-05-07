@@ -1,23 +1,20 @@
 // src/pages/Home.jsx
 
-import React, {
+import {
   useState,
-  useEffect,
 } from "react";
 
-import {
-  Brain,
-} from "lucide-react";
+import WelcomeBanner from "../components/home/WelcomeBanner";
+
+import QuickActions from "../components/home/QuickActions";
 
 import AISearchBar from "../components/home/AISearchBar";
 
 import SearchResults from "../components/home/SearchResults";
 
-import CandidateRecommendationModal from "../components/home/CandidateRecommendationModal";
-
-import QuickActions from "../components/home/QuickActions";
-
 import RecentCandidates from "../components/home/RecentCandidates";
+
+import CandidateRecommendationModal from "../components/home/CandidateRecommendationModal";
 
 import useAISearch from "../hooks/useAISearch";
 
@@ -44,80 +41,55 @@ const Home = () => {
 
   } = useAISearch();
 
-  // ================= LOCAL STATES =================
+  // ================= STATES =================
 
   const [
     selectedCandidate,
     setSelectedCandidate,
   ] = useState(null);
 
-  const [
-    darkMode,
-    setDarkMode,
-  ] = useState(false);
-
-  // ================= DARK MODE =================
-
-  useEffect(() => {
-
-    const checkDarkMode = () => {
-
-      const isDarkMode =
-        document.documentElement.classList.contains(
-          "dark"
-        );
-
-      setDarkMode(isDarkMode);
-    };
-
-    checkDarkMode();
-
-    const observer =
-      new MutationObserver(checkDarkMode);
-
-    observer.observe(
-      document.documentElement,
-      {
-        attributes: true,
-        attributeFilter: ["class"],
-      }
-    );
-
-    return () =>
-      observer.disconnect();
-
-  }, []);
-
   return (
 
-    <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-900 p-6 md:p-8">
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-900 px-4 py-6 sm:px-6 lg:px-8">
 
-      {/* ================= HERO ================= */}
+      {/* ================= WELCOME BANNER ================= */}
 
       <div className="mb-8">
 
-        <div className="flex items-center gap-4 mb-4">
+        <WelcomeBanner />
 
-          <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
+      </div>
 
-            <Brain className="text-blue-600 dark:text-blue-400" />
+      {/* ================= QUICK ACTIONS ================= */}
 
-          </div>
+      {/* <div className="mb-10">
 
-          <div>
+        <QuickActions />
 
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-              AI Recruiter Dashboard
-            </h1>
+      </div> */}
 
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              Discover talent using AI-powered search intelligence
-            </p>
+      {/* ================= AI SEARCH ================= */}
 
-          </div>
+      <div className="mb-10">
+
+        {/* HEADER */}
+
+        <div className="mb-5">
+
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+
+            Smart Talent Search
+
+          </h2>
+
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
+
+            Discover candidates using natural language queries and AI-powered talent matching.
+
+          </p>
         </div>
 
-        {/* ================= SEARCH BAR ================= */}
+        {/* SEARCH BAR */}
 
         <AISearchBar
           query={query}
@@ -145,19 +117,15 @@ const Home = () => {
         </div>
       )}
 
-      {/* ================= QUICK ACTIONS ================= */}
+      {/* ================= RECENT TALENT ================= */}
 
       <div className="mb-10">
 
-        <QuickActions />
+        <RecentCandidates />
 
       </div>
 
-      {/* ================= RECENT TALENT ================= */}
-
-      <RecentCandidates />
-
-      {/* ================= AI MODAL ================= */}
+      {/* ================= MODAL ================= */}
 
       <CandidateRecommendationModal
         selectedCandidate={selectedCandidate}
