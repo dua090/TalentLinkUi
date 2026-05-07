@@ -1,5 +1,3 @@
-// src/components/Sidebar.jsx
-
 import {
   useEffect,
   useState,
