@@ -208,28 +208,104 @@ const CandidateRecommendationModal = ({
 
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 rounded-3xl p-8 text-white">
 
-            <div className="flex items-center gap-3 mb-4">
+            {/* HEADER */}
+
+            <div className="flex items-center gap-3 mb-6">
 
               <Sparkles size={24} />
 
               <h3 className="text-2xl font-bold">
-                AI Recommendation
+                AI Match Insights
               </h3>
             </div>
 
-            <p className="text-blue-100 dark:text-blue-50 leading-relaxed text-lg">
+            {/* SUMMARY */}
 
-              {selectedCandidate.name} is a strong match for this search query due to demonstrated expertise in{" "}
+            <div className="mb-6">
 
-              <span className="font-semibold text-white">
-                {parsedQuery?.skills?.join(", ")}
-              </span>
+              <p className="text-blue-100 dark:text-blue-50 leading-relaxed text-lg">
 
-              {" "}and relevant industry experience. The candidate shows strong alignment with the required technical stack and project exposure.
-            </p>
+                This candidate demonstrates strong alignment with the required technical stack and experience expectations.
 
-            <div className="mt-6 inline-flex px-4 py-2 rounded-2xl bg-white/20 text-sm font-medium">
-              AI Generated Recommendation
+              </p>
+            </div>
+
+            {/* INSIGHTS */}
+
+            <div className="space-y-3">
+
+              {/* MATCHED SKILLS */}
+
+              {parsedQuery?.skills?.map(
+                (skill, index) => {
+
+                  const matched =
+                    selectedCandidate.skills?.some(
+                      (candidateSkill) =>
+                        candidateSkill
+                          .toLowerCase()
+                          .includes(
+                            skill.toLowerCase()
+                          )
+                    );
+
+                  return (
+
+                    <div
+                      key={index}
+                      className="flex items-center gap-3 bg-white/10 rounded-2xl px-4 py-3"
+                    >
+
+                      <div className="text-lg">
+                        {matched ? "✅" : "⚠️"}
+                      </div>
+
+                      <p className="text-sm md:text-base">
+
+                        {matched
+                          ? `${skill} expertise matched successfully`
+                          : `${skill} skill not detected in profile`
+                        }
+
+                      </p>
+                    </div>
+                  );
+                }
+              )}
+
+              {/* EXPERIENCE */}
+
+              <div className="flex items-center gap-3 bg-white/10 rounded-2xl px-4 py-3">
+
+                <div className="text-lg">
+                  ✅
+                </div>
+
+                <p className="text-sm md:text-base">
+
+                  {selectedCandidate.experience}+ years of relevant industry experience
+
+                </p>
+              </div>
+
+              {/* PROJECT ALIGNMENT */}
+
+              {selectedCandidate.projects?.length > 0 && (
+
+                <div className="flex items-center gap-3 bg-white/10 rounded-2xl px-4 py-3">
+
+                  <div className="text-lg">
+                    ✅
+                  </div>
+
+                  <p className="text-sm md:text-base">
+
+                    Project experience available across{" "}
+                    {selectedCandidate.projects.length} implementation areas
+
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
