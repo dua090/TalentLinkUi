@@ -169,7 +169,7 @@ const CandidateModal = ({
         <div className="border-t border-gray-100 dark:border-gray-700 px-8 py-5 flex justify-end gap-4 bg-white dark:bg-gray-800">
 
           <a
-            href={`http://localhost:5000/${selectedCandidate.resumeUrl}`}
+            href={`${import.meta.env.VITE_API_URL}/${selectedCandidate.resumeUrl}`}
             target="_blank"
             rel="noreferrer"
             className="px-5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"

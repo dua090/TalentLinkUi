@@ -1,32 +1,42 @@
-export const fetchCandidates = async () => {
+export const fetchCandidates =
+  async () => {
 
-  try {
+    try {
 
-    const storedUser = JSON.parse(
-      localStorage.getItem("user")
-    );
+      const storedUser =
+        JSON.parse(
+          localStorage.getItem(
+            "user"
+          )
+        );
 
-    const token = storedUser?.token;
+      const token =
+        storedUser?.token;
 
-    const res = await fetch(
-      "http://localhost:5000/api/candidates",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+      const res =
+        await fetch(
 
-    const data = await res.json();
+          `${import.meta.env.VITE_API_URL}/api/candidates`,
 
-    return Array.isArray(data)
-      ? data
-      : [];
+          {
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
+            },
+          }
+        );
 
-  } catch (err) {
+      const data =
+        await res.json();
 
-    console.error(err);
+      return Array.isArray(data)
+        ? data
+        : [];
 
-    return [];
-  }
-};
+    } catch (err) {
+
+      console.error(err);
+
+      return [];
+    }
+  };

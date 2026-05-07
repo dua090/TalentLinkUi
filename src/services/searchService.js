@@ -1,49 +1,61 @@
-export const smartSearch = async (query) => {
+export const smartSearch =
+  async (query) => {
 
-  try {
+    try {
 
-    const storedUser = JSON.parse(
-      localStorage.getItem("user")
-    );
+      const storedUser =
+        JSON.parse(
+          localStorage.getItem(
+            "user"
+          )
+        );
 
-    const token = storedUser?.token;
+      const token =
+        storedUser?.token;
 
-    const res = await fetch(
-      "http://localhost:5000/api/search/smart-search",
-      {
-        method: "POST",
+      const res =
+        await fetch(
 
-        headers: {
-          "Content-Type":
-            "application/json",
+          `${import.meta.env.VITE_API_URL}/api/search/smart-search`,
 
-          Authorization: `Bearer ${token}`,
-        },
+          {
+            method: "POST",
 
-        body: JSON.stringify({
-          prompt: query,
-        }),
+            headers: {
+
+              "Content-Type":
+                "application/json",
+
+              Authorization:
+                `Bearer ${token}`,
+            },
+
+            body: JSON.stringify({
+              prompt: query,
+            }),
+          }
+        );
+
+      const data =
+        await res.json();
+
+      if (!res.ok) {
+
+        throw new Error(
+          data.msg ||
+          "Search failed"
+        );
       }
-    );
 
-    const data = await res.json();
+      return data;
 
-    if (!res.ok) {
+    } catch (err) {
 
-      throw new Error(
-        data.msg || "Search failed"
+      console.error(
+        "SMART SEARCH ERROR:",
+        err
       );
+
+      throw err;
     }
-
-    return data;
-
-  } catch (err) {
-
-    console.error(
-      "SMART SEARCH ERROR:",
-      err
-    );
-
-    throw err;
-  }
-};
+  };

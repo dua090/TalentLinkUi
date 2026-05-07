@@ -1,50 +1,16 @@
+// src/hooks/useTalentPool.js
+
 import {
   useEffect,
   useMemo,
   useState,
 } from "react";
 
-// ================= DOMAIN MAP =================
+import domainMap from "../constants/domainMap";
 
-const domainMap = {
+import filterProfiles from "../utils/filterProfiles";
 
-  Frontend: [
-    "React",
-    "Vue.js",
-    "Angular",
-    "Next.js",
-    "JavaScript",
-    "TypeScript",
-    "HTML",
-    "CSS",
-    "Tailwind CSS",
-  ],
-
-  Backend: [
-    "Node.js",
-    "Express",
-    "Java",
-    "Spring Boot",
-    "REST APIs",
-    "MongoDB",
-    "SQL",
-    "MySQL",
-  ],
-
-  Cloud: [
-    "AWS",
-    "Docker",
-    "Kubernetes",
-    "Azure",
-  ],
-
-  AI_ML: [
-    "Python",
-    "Machine Learning",
-    "TensorFlow",
-    "NLP",
-  ],
-};
+import generateMatchScoreUtil from "../utils/generateMatchScore";
 
 const useTalentPool = () => {
 
@@ -74,7 +40,7 @@ const useTalentPool = () => {
     setSelectedSkills,
   ] = useState([]);
 
-  // ================= FETCH =================
+  // ================= FETCH CANDIDATES =================
 
   useEffect(() => {
 
@@ -154,7 +120,7 @@ const useTalentPool = () => {
 
     }, [profiles]);
 
-  // ================= TOGGLE SKILLS =================
+  // ================= TOGGLE SKILL =================
 
   const toggleSkill =
     (skill) => {
@@ -175,99 +141,40 @@ const useTalentPool = () => {
   // ================= FILTERED PROFILES =================
 
   const filteredProfiles =
-    profiles.filter((profile) => {
+    filterProfiles({
 
-      // SEARCH
+      profiles,
 
-      const matchesSearch =
+      search,
 
-        search.trim() === "" ||
+      experienceFilter,
 
-        profile.skills
-          ?.join(" ")
-          .toLowerCase()
-          .includes(
-            search.toLowerCase()
-          );
+      domainFilter,
 
-      // EXPERIENCE
+      selectedSkills,
 
-      let matchesExperience =
-        true;
-
-      if (
-        experienceFilter ===
-        "Junior"
-      ) {
-
-        matchesExperience =
-          profile.experience <= 2;
-      }
-
-      else if (
-        experienceFilter ===
-        "Mid"
-      ) {
-
-        matchesExperience =
-          profile.experience > 2 &&
-          profile.experience <= 5;
-      }
-
-      else if (
-        experienceFilter ===
-        "Senior"
-      ) {
-
-        matchesExperience =
-          profile.experience > 5;
-      }
-
-      // DOMAIN
-
-      let matchesDomain =
-        true;
-
-      if (
-        domainFilter !== "All"
-      ) {
-
-        matchesDomain =
-          profile.skills?.some(
-            (skill) =>
-              domainMap[
-                domainFilter
-              ]?.includes(skill)
-          );
-      }
-
-      // SKILLS
-
-      let matchesSkills =
-        true;
-
-      if (
-        selectedSkills.length > 0
-      ) {
-
-        matchesSkills =
-          selectedSkills.every(
-            (skill) =>
-              profile.skills?.includes(
-                skill
-              )
-          );
-      }
-
-      return (
-        matchesSearch &&
-        matchesExperience &&
-        matchesDomain &&
-        matchesSkills
-      );
+      domainMap,
     });
 
-  // ================= RESET =================
+  // ================= MATCH SCORE =================
+
+  const generateMatchScore =
+    (profile) =>
+
+      generateMatchScoreUtil({
+
+        profile,
+
+        selectedSkills,
+
+        search,
+
+        domainFilter,
+
+        domainMap,
+      });
+
+  // ================= RESET FILTERS =================
 
   const resetFilters =
     () => {
@@ -285,147 +192,7 @@ const useTalentPool = () => {
       setSelectedSkills([]);
     };
 
-  // ================= MATCH SCORE =================
-
-  const generateMatchScore =
-    (profile) => {
-
-      let score = 0;
-
-      const normalizedProfileSkills =
-        profile.skills?.map(
-          (skill) =>
-            skill
-              .toLowerCase()
-              .trim()
-        ) || [];
-
-      // SKILLS
-
-      if (
-        selectedSkills.length > 0
-      ) {
-
-        const normalizedSelectedSkills =
-          selectedSkills.map(
-            (skill) =>
-              skill
-                .toLowerCase()
-                .trim()
-          );
-
-        const matchedSkills =
-          normalizedSelectedSkills.filter(
-            (skill) =>
-              normalizedProfileSkills.includes(
-                skill
-              )
-          ).length;
-
-        if (
-          matchedSkills ===
-            normalizedSelectedSkills.length &&
-          normalizedSelectedSkills.length > 0
-        ) {
-
-          return 100;
-
-        } else {
-
-          score +=
-            (
-              matchedSkills /
-              normalizedSelectedSkills.length
-            ) * 80;
-        }
-
-      } else {
-
-        score += 50;
-      }
-
-      // SEARCH
-
-      if (
-        search.trim()
-      ) {
-
-        const hasSearchMatch =
-          normalizedProfileSkills.some(
-            (skill) =>
-              skill.includes(
-                search
-                  .toLowerCase()
-                  .trim()
-              )
-          );
-
-        if (
-          hasSearchMatch
-        ) {
-          score += 10;
-        }
-      }
-
-      // EXPERIENCE
-
-      const experience =
-        profile.experience || 0;
-
-      if (
-        experience >= 5
-      ) {
-
-        score += 10;
-
-      } else if (
-        experience >= 3
-      ) {
-
-        score += 7;
-
-      } else {
-
-        score += 5;
-      }
-
-      // DOMAIN
-
-      if (
-        domainFilter !== "All"
-      ) {
-
-        const normalizedDomainSkills =
-          domainMap[
-            domainFilter
-          ]?.map(
-            (skill) =>
-              skill
-                .toLowerCase()
-                .trim()
-          ) || [];
-
-        const hasDomainMatch =
-          normalizedProfileSkills.some(
-            (skill) =>
-              normalizedDomainSkills.includes(
-                skill
-              )
-          );
-
-        if (
-          hasDomainMatch
-        ) {
-
-          score += 10;
-        }
-      }
-
-      return Math.min(
-        Math.round(score),
-        100
-      );
-    };
+  // ================= RETURN =================
 
   return {
 
