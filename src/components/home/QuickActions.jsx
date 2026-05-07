@@ -1,7 +1,5 @@
 // src/components/home/QuickActions.jsx
 
-import React from "react";
-
 import {
   Upload,
   Users,
@@ -11,80 +9,78 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
+// ================= ACTIONS =================
+
+const actions = [
+  {
+    title: "Upload Profile",
+
+    desc: "Upload and parse candidate resumes",
+
+    icon: <Upload size={22} />,
+
+    path: "/upload",
+
+    bg: "bg-blue-50 dark:bg-blue-900/30",
+
+    iconColor:
+      "text-blue-600 dark:text-blue-400",
+  },
+
+  {
+    title: "Talent Pool",
+
+    desc: "Browse all candidate profiles",
+
+    icon: <Users size={22} />,
+
+    path: "/talent",
+
+    bg: "bg-indigo-50 dark:bg-indigo-900/30",
+
+    iconColor:
+      "text-indigo-600 dark:text-indigo-400",
+  },
+
+  {
+    title: "Insights",
+
+    desc: "View hiring analytics",
+
+    icon: <BarChart3 size={22} />,
+
+    path: "/insights",
+
+    bg: "bg-purple-50 dark:bg-purple-900/30",
+
+    iconColor:
+      "text-purple-600 dark:text-purple-400",
+  },
+
+  {
+    title: "Add Candidate",
+
+    desc: "Manually create candidate profile",
+
+    icon: <UserPlus size={22} />,
+
+    path: "/manual-candidate",
+
+    bg: "bg-orange-50 dark:bg-orange-900/30",
+
+    iconColor:
+      "text-orange-600 dark:text-orange-400",
+  },
+];
+
 const QuickActions = () => {
 
   const navigate = useNavigate();
 
-  const actions = [
-
-    {
-      title: "Upload Profile",
-
-      desc: "Upload and parse candidate resumes",
-
-      icon: <Upload size={22} />,
-
-      // ✅ UPDATE THIS
-      path: "/upload",
-
-      bg: "bg-blue-50 dark:bg-blue-900/30",
-
-      iconColor:
-        "text-blue-600 dark:text-blue-400",
-    },
-
-    {
-      title: "Talent Pool",
-
-      desc: "Browse all candidate profiles",
-
-      icon: <Users size={22} />,
-
-      // ✅ UPDATE THIS
-      path: "/talent",
-
-      bg: "bg-indigo-50 dark:bg-indigo-900/30",
-
-      iconColor:
-        "text-indigo-600 dark:text-indigo-400",
-    },
-
-    {
-      title: "Insights",
-
-      desc: "View hiring analytics",
-
-      icon: <BarChart3 size={22} />,
-
-      // ✅ UPDATE THIS
-      path: "/insights",
-
-      bg: "bg-purple-50 dark:bg-purple-900/30",
-
-      iconColor:
-        "text-purple-600 dark:text-purple-400",
-    },
-
-    {
-      title: "Add Candidate",
-
-      desc: "Manually create candidate profile",
-
-      icon: <UserPlus size={22} />,
-
-      // ✅ UPDATE THIS
-      path: "/manual-candidate",
-
-      bg: "bg-orange-50 dark:bg-orange-900/30",
-
-      iconColor:
-        "text-orange-600 dark:text-orange-400",
-    },
-  ];
-
   return (
-
     <div>
+
+      {/* ================= HEADER ================= */}
 
       <div className="flex items-center justify-between mb-5">
 
@@ -101,12 +97,14 @@ const QuickActions = () => {
         </div>
       </div>
 
+      {/* ================= ACTION CARDS ================= */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
 
-        {actions.map((action, index) => (
+        {actions.map((action) => (
 
           <button
-            key={index}
+            key={action.title}
 
             onClick={() =>
               navigate(action.path)

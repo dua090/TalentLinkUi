@@ -302,9 +302,3 @@ screenshots/
 # Author
 
 Developed by Mohammad Mohiddin, Mehak Dua.
-
----
-
-# License
-
-This project is created for educational and MVP demonstration purposes.

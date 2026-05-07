@@ -1,65 +1,103 @@
-import React from "react";
+export const TalentLinkLogo = ({
+  className = "w-48",
+}) => {
 
-export const TalentLinkLogo = ({ className = "w-48" }) => (
-  <svg
-    className={`${className} text-gray-900 dark:text-white`}
-    viewBox="0 0 260 56"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    {/* Icon Background */}
-    <g>
-      <rect
-        width="60"
-        height="60"
-        rx="16"
-        className="fill-white dark:fill-gray-800"
-      />
+  return (
 
-      <line
-        x1="20"
-        y1="22"
-        x2="40"
-        y2="22"
-        stroke="#3B82F6"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      <line
-        x1="30"
-        y1="22"
-        x2="30"
-        y2="40"
-        stroke="#2563EB"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      <line
-        x1="30"
-        y1="40"
-        x2="40"
-        y2="40"
-        stroke="#3B82F6"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-
-      <circle cx="20" cy="22" r="3.8" fill="#2563EB" />
-      <circle cx="40" cy="22" r="3.8" fill="#2563EB" />
-      <circle cx="30" cy="40" r="3.8" fill="#2563EB" />
-    </g>
-
-    {/* Text */}
-    <text
-      x="72"
-      y="32"
-      fontFamily="Inter, system-ui, -apple-system, sans-serif"
-      fontSize="28"
-      fontWeight="700"
-      fill="currentColor" // ✅ auto adapts
-      dominantBaseline="middle"
+    <svg
+      className={`${className} text-gray-900 dark:text-white`}
+      viewBox="0 0 260 56"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label="TalentLink Logo"
     >
-      Talent<tspan fill="#3B82F6">Link</tspan>
-    </text>
-  </svg>
-);
+
+      <title>
+        TalentLink Logo
+      </title>
+
+      {/* ICON */}
+
+      <g>
+
+        <rect
+          width="60"
+          height="60"
+          rx="16"
+          className="fill-white dark:fill-gray-800"
+        />
+
+        <line
+          x1="20"
+          y1="22"
+          x2="40"
+          y2="22"
+          stroke="#3B82F6"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+
+        <line
+          x1="30"
+          y1="22"
+          x2="30"
+          y2="40"
+          stroke="#2563EB"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+
+        <line
+          x1="30"
+          y1="40"
+          x2="40"
+          y2="40"
+          stroke="#3B82F6"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+
+        <circle
+          cx="20"
+          cy="22"
+          r="3.8"
+          fill="#2563EB"
+        />
+
+        <circle
+          cx="40"
+          cy="22"
+          r="3.8"
+          fill="#2563EB"
+        />
+
+        <circle
+          cx="30"
+          cy="40"
+          r="3.8"
+          fill="#2563EB"
+        />
+      </g>
+
+      {/* TEXT */}
+
+      <text
+        x="72"
+        y="32"
+        fontFamily="Inter, system-ui, -apple-system, sans-serif"
+        fontSize="28"
+        fontWeight="700"
+        fill="currentColor"
+        dominantBaseline="middle"
+      >
+
+        Talent
+
+        <tspan fill="#3B82F6">
+          Link
+        </tspan>
+      </text>
+    </svg>
+  );
+};

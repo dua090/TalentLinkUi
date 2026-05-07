@@ -18,6 +18,14 @@ const COLORS = [
   "#8B5CF6",
 ];
 
+// ================= COMMON STYLES =================
+
+const chartContainerClass =
+  "bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm";
+
+const tooltipClass =
+  "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-lg";
+
 // ================= CUSTOM TOOLTIP =================
 
 const CustomTooltip = ({
@@ -27,27 +35,25 @@ const CustomTooltip = ({
 }) => {
 
   if (
-    active &&
-    payload &&
-    payload.length
+    !active ||
+    !payload?.length
   ) {
-
-    return (
-
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-lg">
-
-        <p className="text-sm font-semibold text-gray-900 dark:text-white">
-          {label}
-        </p>
-
-        <p className="text-sm text-blue-600 dark:text-blue-400">
-          Count: {payload[0].value}
-        </p>
-      </div>
-    );
+    return null;
   }
 
-  return null;
+  return (
+
+    <div className={tooltipClass}>
+
+      <p className="text-sm font-semibold text-gray-900 dark:text-white">
+        {label}
+      </p>
+
+      <p className="text-sm text-blue-600 dark:text-blue-400">
+        Count: {payload[0].value}
+      </p>
+    </div>
+  );
 };
 
 // ================= PIE TOOLTIP =================
@@ -59,39 +65,37 @@ const CustomPieTooltip = ({
 }) => {
 
   if (
-    active &&
-    payload &&
-    payload.length
+    !active ||
+    !payload?.length
   ) {
-
-    return (
-
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 shadow-lg">
-
-        <p className="text-sm font-semibold text-gray-900 dark:text-white">
-          {payload[0].name}
-        </p>
-
-        <p className="text-sm text-blue-600 dark:text-blue-400">
-          Count: {payload[0].value}
-        </p>
-
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-
-          {(
-            (
-              payload[0].value /
-              totalProfiles
-            ) * 100
-          ).toFixed(1)}%
-
-          {" "}of total
-        </p>
-      </div>
-    );
+    return null;
   }
 
-  return null;
+  const percentage =
+    (
+      (
+        payload[0].value /
+        totalProfiles
+      ) * 100
+    ).toFixed(1);
+
+  return (
+
+    <div className={tooltipClass}>
+
+      <p className="text-sm font-semibold text-gray-900 dark:text-white">
+        {payload[0].name}
+      </p>
+
+      <p className="text-sm text-blue-600 dark:text-blue-400">
+        Count: {payload[0].value}
+      </p>
+
+      <p className="text-xs text-gray-500 dark:text-gray-400">
+        {percentage}% of total
+      </p>
+    </div>
+  );
 };
 
 // ================= MAIN COMPONENT =================
@@ -103,13 +107,23 @@ const ChartsSection = ({
   totalProfiles,
 }) => {
 
+  const axisColor =
+    darkMode
+      ? "#9CA3AF"
+      : "#6B7280";
+
+  const strokeColor =
+    darkMode
+      ? "#374151"
+      : "#E5E7EB";
+
   return (
 
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
 
-      {/* ================= SKILL CHART ================= */}
+      {/* SKILL CHART */}
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm">
+      <div className={chartContainerClass}>
 
         <div className="mb-6">
 
@@ -138,28 +152,16 @@ const ChartsSection = ({
                 <XAxis
                   dataKey="skill"
                   tick={{
-                    fill: darkMode
-                      ? "#9CA3AF"
-                      : "#6B7280",
+                    fill: axisColor,
                   }}
-                  stroke={
-                    darkMode
-                      ? "#374151"
-                      : "#E5E7EB"
-                  }
+                  stroke={strokeColor}
                 />
 
                 <YAxis
                   tick={{
-                    fill: darkMode
-                      ? "#9CA3AF"
-                      : "#6B7280",
+                    fill: axisColor,
                   }}
-                  stroke={
-                    darkMode
-                      ? "#374151"
-                      : "#E5E7EB"
-                  }
+                  stroke={strokeColor}
                 />
 
                 <Tooltip
@@ -170,15 +172,14 @@ const ChartsSection = ({
 
                 <Bar
                   dataKey="count"
+                  fill="#3B82F6"
                   radius={[
                     8,
                     8,
                     0,
                     0,
                   ]}
-                  fill="#3B82F6"
                 />
-
               </BarChart>
             </ResponsiveContainer>
 
@@ -190,9 +191,9 @@ const ChartsSection = ({
         </div>
       </div>
 
-      {/* ================= EXPERIENCE CHART ================= */}
+      {/* EXPERIENCE CHART */}
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm">
+      <div className={chartContainerClass}>
 
         <div className="mb-6">
 
@@ -218,28 +219,22 @@ const ChartsSection = ({
 
                 <Pie
                   data={experienceData}
+                  dataKey="value"
                   cx="50%"
                   cy="50%"
                   outerRadius={100}
-                  dataKey="value"
+                  labelLine
 
                   label={({
                     name,
                     percent,
                   }) =>
-                    `${name} ${(
-                      percent * 100
-                    ).toFixed(0)}%`
+                    `${name} ${(percent * 100).toFixed(0)}%`
                   }
-
-                  labelLine={true}
                 >
 
                   {experienceData.map(
-                    (
-                      entry,
-                      index
-                    ) => (
+                    (_, index) => (
 
                       <Cell
                         key={index}
@@ -263,7 +258,6 @@ const ChartsSection = ({
                     />
                   }
                 />
-
               </PieChart>
             </ResponsiveContainer>
 

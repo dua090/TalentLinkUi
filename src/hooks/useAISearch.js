@@ -1,10 +1,12 @@
-import { useState } from "react";
+import {
+  useState,
+} from "react";
 
-import { smartSearch } from "../services/searchService";
+import {
+  smartSearch,
+} from "../services/searchService";
 
 const useAISearch = () => {
-
-  // ================= STATES =================
 
   const [query, setQuery] =
     useState("");
@@ -21,7 +23,7 @@ const useAISearch = () => {
   const [parsedQuery, setParsedQuery] =
     useState(null);
 
-  // ================= HANDLE SEARCH =================
+  // ================= SEARCH =================
 
   const handleSearch = async (
     customQuery
@@ -30,7 +32,11 @@ const useAISearch = () => {
     const finalQuery =
       customQuery || query;
 
-    if (!finalQuery.trim()) return;
+    if (
+      !finalQuery.trim()
+    ) {
+      return;
+    }
 
     try {
 
@@ -39,7 +45,9 @@ const useAISearch = () => {
       setShowResults(true);
 
       const data =
-        await smartSearch(finalQuery);
+        await smartSearch(
+          finalQuery
+        );
 
       setResults(
         data.candidates || []
@@ -51,9 +59,14 @@ const useAISearch = () => {
 
     } catch (err) {
 
-      console.error(err);
+      console.error(
+        "AI search failed:",
+        err
+      );
 
       setResults([]);
+
+      setParsedQuery(null);
 
     } finally {
 
@@ -63,7 +76,9 @@ const useAISearch = () => {
 
   // ================= QUICK SEARCH =================
 
-  const quickSearch = (value) => {
+  const quickSearch = (
+    value
+  ) => {
 
     setQuery(value);
 

@@ -1,6 +1,6 @@
 // src/components/home/RecentCandidates.jsx
 
-import React, {
+import {
   useEffect,
   useState,
 } from "react";
@@ -50,8 +50,8 @@ const RecentCandidates = () => {
 
             // ================= SORT LATEST FIRST =================
 
-            const sorted =
-              data.sort(
+            const sortedCandidates =
+              [...data].sort(
                 (a, b) =>
                   new Date(
                     b.createdAt
@@ -64,13 +64,19 @@ const RecentCandidates = () => {
             // ================= TAKE LATEST 4 =================
 
             setCandidates(
-              sorted.slice(0, 4)
+              sortedCandidates.slice(
+                0,
+                4
+              )
             );
           }
 
         } catch (err) {
 
-          console.error(err);
+          console.error(
+            "Failed to fetch recent candidates:",
+            err
+          );
         }
       };
 
@@ -84,13 +90,13 @@ const RecentCandidates = () => {
     dateString
   ) => {
 
-    if (!dateString)
+    if (!dateString) {
       return "Recently added";
+    }
 
-    const date =
-      new Date(dateString);
-
-    return date.toLocaleDateString(
+    return new Date(
+      dateString
+    ).toLocaleDateString(
       "en-US",
       {
         day: "numeric",
@@ -101,7 +107,6 @@ const RecentCandidates = () => {
   };
 
   return (
-
     <div>
 
       {/* ================= HEADER ================= */}
@@ -117,89 +122,98 @@ const RecentCandidates = () => {
         </p>
       </div>
 
-      {/* ================= GRID ================= */}
+      {/* ================= EMPTY STATE ================= */}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+      {candidates.length === 0 ? (
 
-        {candidates.map(
-          (candidate) => (
+        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl p-10 text-center">
 
-            <div
-              key={candidate._id}
-              className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl p-5 hover:shadow-md transition flex flex-col"
-            >
+          <p className="text-gray-500 dark:text-gray-400">
+            No recent candidates available.
+          </p>
+        </div>
 
-              {/* ================= HEADER ================= */}
+      ) : (
 
-              <div className="flex items-center gap-4 mb-5">
+        /* ================= GRID ================= */
 
-                <img
-                  src={`https://ui-avatars.com/api/?name=${candidate.name}&background=EFF6FF&color=2563EB&bold=true`}
-                  alt={candidate.name}
-                  className="w-14 h-14 rounded-2xl"
-                />
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
 
-                <div>
+          {candidates.map(
+            (candidate) => (
 
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
-                    {candidate.name}
-                  </h3>
+              <div
+                key={candidate._id}
+                className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-3xl p-5 hover:shadow-md transition flex flex-col"
+              >
 
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {candidate.experience || 0} years
-                  </p>
+                {/* ================= HEADER ================= */}
+
+                <div className="flex items-center gap-4 mb-5">
+
+                  <img
+                    src={`https://ui-avatars.com/api/?name=${candidate.name}&background=EFF6FF&color=2563EB&bold=true`}
+                    alt={candidate.name}
+                    className="w-14 h-14 rounded-2xl"
+                  />
+
+                  <div>
+
+                    <h3 className="font-semibold text-gray-900 dark:text-white">
+                      {candidate.name}
+                    </h3>
+
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {candidate.experience || 0} years
+                    </p>
+                  </div>
                 </div>
-              </div>
 
-              {/* ================= SKILLS ================= */}
+                {/* ================= SKILLS ================= */}
 
-              <div className="flex flex-wrap gap-2 mb-5 min-h-[68px]">
+                <div className="flex flex-wrap gap-2 mb-5 min-h-[68px]">
 
-                {candidate.skills
-                  ?.slice(0, 3)
-                  .map(
-                    (
-                      skill,
-                      index
-                    ) => (
+                  {candidate.skills
+                    ?.slice(0, 3)
+                    .map((skill) => (
 
                       <span
-                        key={index}
+                        key={skill}
                         className="px-3 py-1 h-fit bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs rounded-lg font-medium"
                       >
                         {skill}
                       </span>
-                    )
+                    ))}
+
+                  {candidate.skills?.length > 3 && (
+
+                    <span
+                      className="px-3 py-1 h-fit bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-lg font-medium"
+                    >
+                      +{candidate.skills.length - 3} more
+                    </span>
                   )}
+                </div>
 
-                {candidate.skills?.length > 3 && (
+                {/* ================= FOOTER ================= */}
 
-                  <span
-                    className="px-3 py-1 h-fit bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-lg font-medium"
-                  >
-                    +{candidate.skills.length - 3} more
+                <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+
+                  <span className="text-xs text-gray-400 dark:text-gray-500">
+                    Added on
                   </span>
-                )}
+
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                    {formatDate(
+                      candidate.createdAt
+                    )}
+                  </span>
+                </div>
               </div>
-
-              {/* ================= FOOTER ================= */}
-
-              <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-
-                <span className="text-xs text-gray-400 dark:text-gray-500">
-                  Added on
-                </span>
-
-                <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                  {formatDate(
-                    candidate.createdAt
-                  )}
-                </span>
-              </div>
-            </div>
-          )
-        )}
-      </div>
+            )
+          )}
+        </div>
+      )}
     </div>
   );
 };

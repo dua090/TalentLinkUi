@@ -1,7 +1,15 @@
 // src/components/Sidebar.jsx
 
-import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  Link,
+  useLocation,
+} from "react-router-dom";
+
 import {
   Home,
   Upload,
@@ -16,248 +24,443 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
+
 import { TalentLinkLogo } from "../components/TalentLinkLogo";
 
-export default function Sidebar({ isOpen, setIsOpen }) {
-  const { logout } = useAuth();
-  const location = useLocation();
+const navItems = [
+  {
+    label: "Home",
+    path: "/home",
+    icon: Home,
+  },
+  {
+    label: "Upload Profiles",
+    path: "/upload",
+    icon: Upload,
+  },
+  {
+    label: "Talent Pool",
+    path: "/talent",
+    icon: Users,
+  },
+  {
+    label: "Insights",
+    path: "/insights",
+    icon: BarChart3,
+  },
+];
 
-  const [user, setUser] = useState(null);
-  const [darkMode, setDarkMode] = useState(false);
+export default function Sidebar({
+  isOpen,
+  setIsOpen,
+}) {
 
-  // ================= GET USER =================
+  const { logout } =
+    useAuth();
+
+  const location =
+    useLocation();
+
+  const [user, setUser] =
+    useState(null);
+
+  const [darkMode, setDarkMode] =
+    useState(false);
+
+  // ================= USER & THEME =================
+
   useEffect(() => {
-    try {
-      const storedUser = JSON.parse(localStorage.getItem("user"));
-      if (storedUser?.user) setUser(storedUser.user);
 
-      const theme = localStorage.getItem("theme");
-      if (theme) setDarkMode(theme === "dark");
+    try {
+
+      const storedUser =
+        JSON.parse(
+          localStorage.getItem(
+            "user"
+          )
+        );
+
+      if (
+        storedUser?.user
+      ) {
+        setUser(
+          storedUser.user
+        );
+      }
+
+      const savedTheme =
+        localStorage.getItem(
+          "theme"
+        );
+
+      setDarkMode(
+        savedTheme === "dark"
+      );
+
     } catch (err) {
-      console.error(err);
+
+      console.error(
+        "Sidebar initialization failed:",
+        err
+      );
     }
+
   }, []);
 
   // ================= APPLY THEME =================
+
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
+
+    document.documentElement.classList.toggle(
+      "dark",
+      darkMode
+    );
+
+    localStorage.setItem(
+      "theme",
+      darkMode
+        ? "dark"
+        : "light"
+    );
+
   }, [darkMode]);
 
-  // ================= BODY SCROLL LOCK =================
-  useEffect(() => {
-    if (isOpen && window.innerWidth < 768) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
+  // ================= BODY SCROLL =================
 
-    return () => (document.body.style.overflow = "auto");
+  useEffect(() => {
+
+    const isMobile =
+      window.innerWidth < 768;
+
+    document.body.style.overflow =
+      isOpen && isMobile
+        ? "hidden"
+        : "auto";
+
+    return () => {
+      document.body.style.overflow =
+        "auto";
+    };
+
   }, [isOpen]);
 
   // ================= AUTO CLOSE MOBILE =================
+
   useEffect(() => {
-    if (window.innerWidth < 768) setIsOpen(false);
+
+    if (
+      window.innerWidth < 768
+    ) {
+      setIsOpen(false);
+    }
+
   }, [location.pathname]);
 
-  const handleMobileClose = () => {
-    if (window.innerWidth < 768) setIsOpen(false);
-  };
+  // ================= HELPERS =================
 
-  // ================= ACTIVE CLASS =================
-  const getClass = (path) =>
-    `group relative flex items-center
-    ${isOpen ? "gap-3 px-4" : "justify-center"}
-    py-3 rounded-2xl cursor-pointer transition-all duration-300
-    
-    ${
-      location.pathname === path
-        ? "bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 font-semibold"
-        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
-    }`;
+  const handleMobileClose =
+    () => {
+
+      if (
+        window.innerWidth < 768
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+  const getNavClass =
+    (path) => `
+
+      group relative flex items-center
+
+      ${
+        isOpen
+          ? "gap-3 px-4"
+          : "justify-center"
+      }
+
+      py-3 rounded-2xl cursor-pointer
+      transition-all duration-300
+
+      ${
+        location.pathname ===
+        path
+
+          ? "bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 font-semibold"
+
+          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+      }
+    `;
 
   // ================= TOOLTIP =================
-  const Tooltip = ({ text }) => (
+
+  const Tooltip = ({
+    text,
+  }) => (
+
     <div
-      className="absolute left-16 opacity-0 group-hover:opacity-100 pointer-events-none
-      bg-gray-900 dark:bg-gray-700 text-white text-xs px-3 py-2 rounded-xl
-      whitespace-nowrap transition-all duration-200 shadow-lg z-50"
+      className="
+      absolute left-16
+      opacity-0 group-hover:opacity-100
+      pointer-events-none
+      bg-gray-900 dark:bg-gray-700
+      text-white text-xs
+      px-3 py-2 rounded-xl
+      whitespace-nowrap
+      transition-all duration-200
+      shadow-lg z-50
+    "
     >
       {text}
     </div>
   );
 
   return (
+
     <>
-      {/* ================= MOBILE OVERLAY ================= */}
+      {/* MOBILE OVERLAY */}
+
       {isOpen && (
+
         <div
-          onClick={() => setIsOpen(false)}
+          onClick={() =>
+            setIsOpen(false)
+          }
           className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden"
         />
       )}
 
-      {/* ================= SIDEBAR ================= */}
+      {/* SIDEBAR */}
+
       <div
-        className={`fixed top-0 left-0 h-screen flex flex-col justify-between
+        className={`
+        fixed top-0 left-0 h-screen
+        flex flex-col justify-between
         bg-white dark:bg-gray-900
         border-r border-gray-100 dark:border-gray-800
         transition-all duration-300 z-50
         md:shadow-sm shadow-2xl
-        
+
         ${
           isOpen
             ? "translate-x-0"
             : "-translate-x-full md:translate-x-0"
         }
-        
-        ${isOpen ? "w-64" : "md:w-20 w-64"}`}
+
+        ${
+          isOpen
+            ? "w-64"
+            : "md:w-20 w-64"
+        }
+      `}
       >
-        {/* ================= TOP ================= */}
+
+        {/* TOP SECTION */}
+
         <div>
+
           {/* HEADER */}
+
           <div
-            className={`h-24 border-b border-gray-100 dark:border-gray-800 flex items-center
-            ${isOpen ? "justify-between px-5" : "justify-center"}`}
+            className={`
+            h-24 border-b border-gray-100 dark:border-gray-800 flex items-center
+            ${
+              isOpen
+                ? "justify-between px-5"
+                : "justify-center"
+            }
+          `}
           >
+
             {/* LOGO */}
-            {isOpen ? (
-              <Link to="/home" onClick={handleMobileClose}>
+
+            <Link
+              to="/home"
+              onClick={
+                handleMobileClose
+              }
+            >
+
+              {isOpen ? (
+
                 <TalentLinkLogo className="w-52" />
-              </Link>
-            ) : (
-              <Link to="/home" onClick={handleMobileClose}>
+
+              ) : (
+
                 <div className="w-11 h-11 flex items-center justify-center">
+
                   <img
                     src="/talentlink-icon.svg"
                     alt="TalentLink"
                     className="w-10 h-10"
                   />
                 </div>
-              </Link>
-            )}
+              )}
+            </Link>
 
-            {/* MOBILE CLOSE */}
-            {isOpen && (
-              <button
-                onClick={() => setIsOpen(false)}
-                className="md:hidden w-12 h-12 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center"
-              >
-                <X className="text-gray-700 dark:text-gray-300" />
-              </button>
-            )}
+            {/* CONTROLS */}
 
-            {/* DESKTOP COLLAPSE */}
-            {isOpen && (
-              <button
-                onClick={() => setIsOpen(false)}
-                className="hidden md:flex w-10 h-10 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 items-center justify-center"
-              >
-                <PanelLeftClose className="text-gray-600 dark:text-gray-300" />
-              </button>
-            )}
+            {isOpen ? (
 
-            {/* DESKTOP EXPAND */}
-            {!isOpen && (
+              <>
+                <button
+                  onClick={() =>
+                    setIsOpen(false)
+                  }
+                  className="md:hidden w-12 h-12 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center justify-center"
+                >
+                  <X className="text-gray-700 dark:text-gray-300" />
+                </button>
+
+                <button
+                  onClick={() =>
+                    setIsOpen(false)
+                  }
+                  className="hidden md:flex w-10 h-10 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 items-center justify-center"
+                >
+                  <PanelLeftClose className="text-gray-600 dark:text-gray-300" />
+                </button>
+              </>
+
+            ) : (
+
               <button
-                onClick={() => setIsOpen(true)}
-                className="hidden md:flex absolute top-7 right-[-18px] w-10 h-10 rounded-full
+                onClick={() =>
+                  setIsOpen(true)
+                }
+                className="
+                hidden md:flex
+                absolute top-7 right-[-18px]
+                w-10 h-10 rounded-full
                 bg-white dark:bg-gray-800
                 border border-gray-200 dark:border-gray-700
-                shadow-sm hover:shadow-md items-center justify-center"
+                shadow-sm hover:shadow-md
+                items-center justify-center
+              "
               >
                 <Menu className="text-gray-600 dark:text-gray-300" />
               </button>
             )}
           </div>
 
-          {/* NAV */}
+          {/* NAVIGATION */}
+
           <div className="px-3 py-6">
+
             <ul className="space-y-2">
-              <Link to="/home" onClick={handleMobileClose}>
-                <li className={getClass("/home")}>
-                  <Home size={20} />
-                  {isOpen ? <span>Home</span> : <Tooltip text="Home" />}
-                </li>
-              </Link>
 
-              <Link to="/upload" onClick={handleMobileClose}>
-                <li className={getClass("/upload")}>
-                  <Upload size={20} />
-                  {isOpen ? (
-                    <span>Upload Profiles</span>
-                  ) : (
-                    <Tooltip text="Upload Profiles" />
-                  )}
-                </li>
-              </Link>
+              {navItems.map(
+                ({
+                  label,
+                  path,
+                  icon: Icon,
+                }) => (
 
-              <Link to="/talent" onClick={handleMobileClose}>
-                <li className={getClass("/talent")}>
-                  <Users size={20} />
-                  {isOpen ? (
-                    <span>Talent Pool</span>
-                  ) : (
-                    <Tooltip text="Talent Pool" />
-                  )}
-                </li>
-              </Link>
+                  <Link
+                    key={path}
+                    to={path}
+                    onClick={
+                      handleMobileClose
+                    }
+                  >
 
-              <Link to="/insights" onClick={handleMobileClose}>
-                <li className={getClass("/insights")}>
-                  <BarChart3 size={20} />
-                  {isOpen ? (
-                    <span>Insights</span>
-                  ) : (
-                    <Tooltip text="Insights" />
-                  )}
-                </li>
-              </Link>
+                    <li
+                      className={getNavClass(
+                        path
+                      )}
+                    >
+
+                      <Icon size={20} />
+
+                      {isOpen ? (
+
+                        <span>
+                          {label}
+                        </span>
+
+                      ) : (
+
+                        <Tooltip
+                          text={label}
+                        />
+                      )}
+                    </li>
+                  </Link>
+                )
+              )}
             </ul>
           </div>
         </div>
 
-        {/* ================= BOTTOM ================= */}
+        {/* BOTTOM SECTION */}
+
         <div className="p-4 border-t border-gray-100 dark:border-gray-800">
-          {/* THEME */}
+
+          {/* THEME TOGGLE */}
+
           <button
-            onClick={() => setDarkMode(!darkMode)}
-            className={`mb-4 flex items-center
-            ${isOpen ? "gap-3 w-full px-4" : "justify-center"}
+            onClick={() =>
+              setDarkMode(
+                !darkMode
+              )
+            }
+            className={`
+            mb-4 flex items-center
+            ${
+              isOpen
+                ? "gap-3 w-full px-4"
+                : "justify-center"
+            }
             py-3 rounded-2xl
             text-gray-600 dark:text-gray-300
-            hover:bg-gray-100 dark:hover:bg-gray-800`}
+            hover:bg-gray-100 dark:hover:bg-gray-800
+          `}
           >
-            {darkMode ? <Sun /> : <Moon />}
+
+            {darkMode
+              ? <Sun />
+              : <Moon />}
+
             {isOpen && (
+
               <span className="text-sm font-medium">
-                {darkMode ? "Light Mode" : "Dark Mode"}
+
+                {darkMode
+                  ? "Light Mode"
+                  : "Dark Mode"}
+
               </span>
             )}
           </button>
 
-          {/* PROFILE */}
+          {/* USER */}
+
           <div
-            className={`flex items-center
-            ${isOpen ? "gap-3 px-2" : "justify-center"} mb-5`}
+            className={`
+            flex items-center
+            ${
+              isOpen
+                ? "gap-3 px-2"
+                : "justify-center"
+            }
+            mb-5
+          `}
           >
+
             <img
-              src={`https://ui-avatars.com/api/?name=${
-                user?.name || "User"
-              }`}
+              src={`https://ui-avatars.com/api/?name=${user?.name || "User"}`}
+              alt="User"
               className="w-11 h-11 rounded-2xl border border-blue-100"
             />
 
             {isOpen && (
+
               <div>
+
                 <p className="text-sm font-semibold text-gray-900 dark:text-white">
                   {user?.name || "User"}
                 </p>
+
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {user?.email || "user@email.com"}
                 </p>
@@ -266,17 +469,33 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           </div>
 
           {/* LOGOUT */}
+
           <button
             onClick={logout}
-            className={`w-full flex items-center
-            ${isOpen ? "gap-3 px-4" : "justify-center"}
+            className={`
+            w-full flex items-center
+            ${
+              isOpen
+                ? "gap-3 px-4"
+                : "justify-center"
+            }
             py-3 rounded-2xl
             border border-gray-200 dark:border-gray-700
             text-gray-700 dark:text-gray-300
-            hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600`}
+            hover:border-red-200
+            hover:bg-red-50
+            dark:hover:bg-red-900/20
+            hover:text-red-600
+          `}
           >
+
             <LogOut size={18} />
-            {isOpen && <span>Logout</span>}
+
+            {isOpen && (
+              <span>
+                Logout
+              </span>
+            )}
           </button>
         </div>
       </div>

@@ -4,44 +4,47 @@ const AIRecommendationCard = ({
   aiInsight,
 }) => {
 
+  const hasProfiles =
+    totalProfiles > 0;
+
+  const formattedDomain =
+    topHiringDomain?.replace(
+      "_",
+      " & "
+    );
+
+  const heading =
+    hasProfiles
+      ? `${formattedDomain} talent demand is growing rapidly.`
+      : "AI insights will appear once candidate data is available.";
+
+  const description =
+    hasProfiles
+      ? aiInsight
+      : "Upload candidate resumes to generate hiring intelligence and talent insights.";
+
   return (
 
     <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-6 shadow-sm text-white">
 
       <p className="text-sm opacity-80 mb-2">
-        AI Recommendation
+        Talent Insights
       </p>
 
       <h3 className="text-2xl font-bold leading-snug mb-4">
-
-        {totalProfiles > 0
-
-          ? `${topHiringDomain.replace(
-              "_",
-              " & "
-            )} talent demand is growing rapidly.`
-
-          : "AI insights will appear once candidate data is available."}
-
+        {heading}
       </h3>
 
       <p className="text-sm opacity-90 leading-relaxed">
-
-        {totalProfiles > 0
-
-          ? aiInsight
-
-          : "Upload candidate resumes to generate hiring intelligence and talent insights."}
-
+        {description}
       </p>
 
       <div className="mt-6">
 
         <span className="inline-flex px-3 py-1 rounded-full bg-white/20 text-sm">
-
-          AI Generated Insight
-
+          Data-driven Insight
         </span>
+
       </div>
     </div>
   );

@@ -8,6 +8,17 @@ const CandidateRecommendationModal = ({
 
   if (!selectedCandidate) return null;
 
+  // ================= HELPERS =================
+
+  const isSkillMatched = (skill) => {
+    return selectedCandidate.skills?.some(
+      (candidateSkill) =>
+        candidateSkill
+          .toLowerCase()
+          .includes(skill.toLowerCase())
+    );
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-black/60 backdrop-blur-sm p-4">
 
@@ -15,7 +26,7 @@ const CandidateRecommendationModal = ({
 
         <div className="p-8 max-h-[90vh] overflow-y-auto">
 
-          {/* HEADER */}
+          {/* ================= HEADER ================= */}
 
           <div className="flex justify-between items-start mb-8">
 
@@ -53,7 +64,7 @@ const CandidateRecommendationModal = ({
             </button>
           </div>
 
-          {/* AI MATCH ANALYSIS */}
+          {/* ================= AI MATCH ANALYSIS ================= */}
 
           <div className="mb-8">
 
@@ -63,61 +74,48 @@ const CandidateRecommendationModal = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-              {parsedQuery?.skills?.map(
-                (skill, index) => {
+              {parsedQuery?.skills?.map((skill) => {
 
-                  const matched =
-                    selectedCandidate.skills?.some(
-                      (cSkill) =>
-                        cSkill
-                          .toLowerCase()
-                          .includes(
-                            skill.toLowerCase()
-                          )
-                    );
+                const matched =
+                  isSkillMatched(skill);
 
-                  return (
+                return (
+                  <div
+                    key={skill}
+                    className={`p-4 rounded-2xl border
+                    ${
+                      matched
+                        ? "bg-green-50 dark:bg-green-900/30 border-green-100 dark:border-green-900"
+                        : "bg-red-50 dark:bg-red-900/30 border-red-100 dark:border-red-900"
+                    }`}
+                  >
 
-                    <div
-                      key={index}
-                      className={`p-4 rounded-2xl border
-                      
-                      ${
-                        matched
-                          ? "bg-green-50 dark:bg-green-900/30 border-green-100 dark:border-green-900"
-                          : "bg-red-50 dark:bg-red-900/30 border-red-100 dark:border-red-900"
-                      }`}
-                    >
+                    <div className="flex items-center gap-3">
 
-                      <div className="flex items-center gap-3">
+                      <div className="text-xl">
+                        {matched ? "✅" : "❌"}
+                      </div>
 
-                        <div className="text-xl">
+                      <div>
+
+                        <p className="font-semibold text-gray-900 dark:text-white">
+                          {skill}
+                        </p>
+
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
                           {matched
-                            ? "✅"
-                            : "❌"}
-                        </div>
-
-                        <div>
-
-                          <p className="font-semibold text-gray-900 dark:text-white">
-                            {skill}
-                          </p>
-
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {matched
-                              ? "Skill matched successfully"
-                              : "Skill not found"}
-                          </p>
-                        </div>
+                            ? "Skill matched successfully"
+                            : "Skill not found"}
+                        </p>
                       </div>
                     </div>
-                  );
-                }
-              )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* SKILLS */}
+          {/* ================= SKILLS ================= */}
 
           <div className="mb-8">
 
@@ -127,34 +125,36 @@ const CandidateRecommendationModal = ({
 
             <div className="flex flex-wrap gap-3">
 
-              {selectedCandidate.skills?.map(
-                (skill, index) => (
+              {selectedCandidate.skills?.map((skill) => {
 
+                const matched =
+                  parsedQuery?.skills?.some(
+                    (parsedSkill) =>
+                      skill
+                        .toLowerCase()
+                        .includes(
+                          parsedSkill.toLowerCase()
+                        )
+                  );
+
+                return (
                   <span
-                    key={index}
+                    key={skill}
                     className={`px-4 py-2 rounded-xl text-sm font-medium
-                    
                     ${
-                      parsedQuery?.skills?.some(
-                        (s) =>
-                          skill
-                            .toLowerCase()
-                            .includes(
-                              s.toLowerCase()
-                            )
-                      )
+                      matched
                         ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-100 dark:border-green-900"
                         : "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-900"
                     }`}
                   >
                     {skill}
                   </span>
-                )
-              )}
+                );
+              })}
             </div>
           </div>
 
-          {/* PROJECTS */}
+          {/* ================= PROJECTS ================= */}
 
           <div className="mb-8">
 
@@ -164,23 +164,20 @@ const CandidateRecommendationModal = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-              {selectedCandidate.projects?.map(
-                (project, index) => (
-
-                  <div
-                    key={index}
-                    className="p-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50"
-                  >
-                    <h4 className="font-semibold text-gray-900 dark:text-white">
-                      {project}
-                    </h4>
-                  </div>
-                )
-              )}
+              {selectedCandidate.projects?.map((project) => (
+                <div
+                  key={project}
+                  className="p-5 rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50"
+                >
+                  <h4 className="font-semibold text-gray-900 dark:text-white">
+                    {project}
+                  </h4>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* EDUCATION */}
+          {/* ================= EDUCATION ================= */}
 
           <div className="mb-8">
 
@@ -190,25 +187,22 @@ const CandidateRecommendationModal = ({
 
             <div className="space-y-3">
 
-              {selectedCandidate.education?.map(
-                (edu, index) => (
-
-                  <div
-                    key={index}
-                    className="p-4 rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50"
-                  >
-                    🎓 {edu}
-                  </div>
-                )
-              )}
+              {selectedCandidate.education?.map((education) => (
+                <div
+                  key={education}
+                  className="p-4 rounded-2xl border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50"
+                >
+                  🎓 {education}
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* AI SUMMARY */}
+          {/* ================= AI MATCH INSIGHTS ================= */}
 
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 rounded-3xl p-8 text-white">
 
-            {/* HEADER */}
+            {/* ================= HEADER ================= */}
 
             <div className="flex items-center gap-3 mb-6">
 
@@ -219,61 +213,45 @@ const CandidateRecommendationModal = ({
               </h3>
             </div>
 
-            {/* SUMMARY */}
+            {/* ================= SUMMARY ================= */}
 
             <div className="mb-6">
 
               <p className="text-blue-100 dark:text-blue-50 leading-relaxed text-lg">
-
                 This candidate demonstrates strong alignment with the required technical stack and experience expectations.
-
               </p>
             </div>
 
-            {/* INSIGHTS */}
+            {/* ================= INSIGHTS ================= */}
 
             <div className="space-y-3">
 
-              {/* MATCHED SKILLS */}
+              {parsedQuery?.skills?.map((skill) => {
 
-              {parsedQuery?.skills?.map(
-                (skill, index) => {
+                const matched =
+                  isSkillMatched(skill);
 
-                  const matched =
-                    selectedCandidate.skills?.some(
-                      (candidateSkill) =>
-                        candidateSkill
-                          .toLowerCase()
-                          .includes(
-                            skill.toLowerCase()
-                          )
-                    );
+                return (
+                  <div
+                    key={skill}
+                    className="flex items-center gap-3 bg-white/10 rounded-2xl px-4 py-3"
+                  >
 
-                  return (
-
-                    <div
-                      key={index}
-                      className="flex items-center gap-3 bg-white/10 rounded-2xl px-4 py-3"
-                    >
-
-                      <div className="text-lg">
-                        {matched ? "✅" : "⚠️"}
-                      </div>
-
-                      <p className="text-sm md:text-base">
-
-                        {matched
-                          ? `${skill} expertise matched successfully`
-                          : `${skill} skill not detected in profile`
-                        }
-
-                      </p>
+                    <div className="text-lg">
+                      {matched ? "✅" : "⚠️"}
                     </div>
-                  );
-                }
-              )}
 
-              {/* EXPERIENCE */}
+                    <p className="text-sm md:text-base">
+
+                      {matched
+                        ? `${skill} expertise matched successfully`
+                        : `${skill} skill not detected in profile`}
+                    </p>
+                  </div>
+                );
+              })}
+
+              {/* ================= EXPERIENCE ================= */}
 
               <div className="flex items-center gap-3 bg-white/10 rounded-2xl px-4 py-3">
 
@@ -282,13 +260,11 @@ const CandidateRecommendationModal = ({
                 </div>
 
                 <p className="text-sm md:text-base">
-
                   {selectedCandidate.experience}+ years of relevant industry experience
-
                 </p>
               </div>
 
-              {/* PROJECT ALIGNMENT */}
+              {/* ================= PROJECTS ================= */}
 
               {selectedCandidate.projects?.length > 0 && (
 
@@ -299,10 +275,8 @@ const CandidateRecommendationModal = ({
                   </div>
 
                   <p className="text-sm md:text-base">
-
                     Project experience available across{" "}
                     {selectedCandidate.projects.length} implementation areas
-
                   </p>
                 </div>
               )}
