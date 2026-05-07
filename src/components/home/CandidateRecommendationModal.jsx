@@ -49,7 +49,7 @@ const CandidateRecommendationModal = ({
                 </p>
 
                 <div className="mt-3 inline-flex px-4 py-2 rounded-2xl bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 font-semibold">
-                  {selectedCandidate.matchPercentage}% AI Match
+                  {selectedCandidate.matchPercentage}% Match Score
                 </div>
               </div>
             </div>
