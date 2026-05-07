@@ -1,22 +1,106 @@
+// src/hooks/useInsights.js
+
 import {
-  useState,
   useEffect,
+  useState,
 } from "react";
 
 import {
   fetchCandidates,
 } from "../services/insightsService";
 
+const domainMap = {
+
+  Frontend: [
+    "React",
+    "React.js",
+    "Next.js",
+    "Vue",
+    "Vue.js",
+    "Angular",
+    "JavaScript",
+    "TypeScript",
+    "HTML",
+    "CSS",
+    "SCSS",
+    "Bootstrap",
+    "Tailwind CSS",
+    "Redux",
+    "Redux Toolkit",
+    "Material UI",
+    "UI/UX",
+    "Figma",
+    "Responsive Design",
+  ],
+
+  Backend: [
+    "Node.js",
+    "Node",
+    "Express",
+    "Express.js",
+    "Java",
+    "Spring Boot",
+    "Python",
+    "Django",
+    "Flask",
+    "PHP",
+    "Laravel",
+    "REST APIs",
+    "GraphQL",
+    "MongoDB",
+    "MySQL",
+    "PostgreSQL",
+    "SQL",
+    "Firebase",
+    "Redis",
+    "API Development",
+    "Microservices",
+  ],
+
+  Cloud: [
+    "AWS",
+    "Azure",
+    "Google Cloud",
+    "GCP",
+    "Docker",
+    "Kubernetes",
+    "CI/CD",
+    "Jenkins",
+    "Terraform",
+    "Linux",
+    "Nginx",
+    "DevOps",
+    "Cloud Computing",
+    "Serverless",
+  ],
+
+  AI_ML: [
+    "Machine Learning",
+    "Deep Learning",
+    "Artificial Intelligence",
+    "TensorFlow",
+    "PyTorch",
+    "NLP",
+    "Computer Vision",
+    "LLM",
+    "OpenAI",
+    "LangChain",
+    "Generative AI",
+    "Data Science",
+    "Data Analysis",
+    "Pandas",
+    "NumPy",
+    "Scikit-learn",
+    "AI",
+  ],
+};
+
 const useInsights = () => {
 
-  // ================= STATES =================
+  const [profiles, setProfiles] =
+    useState([]);
 
-  const [
-    profiles,
-    setProfiles,
-  ] = useState([]);
-
-  // ================= FETCH CANDIDATES =================
+  // ================= FETCH =================
 
   useEffect(() => {
 
@@ -33,97 +117,66 @@ const useInsights = () => {
 
   }, []);
 
-  // ================= KPI ANALYTICS =================
+  // ================= KPI =================
 
   const totalProfiles =
     profiles.length;
 
+  const totalExperience =
+    profiles.reduce(
+      (acc, profile) =>
+        acc +
+        (profile.experience || 0),
+      0
+    );
+
   const avgExperience =
-    profiles.length > 0
+    totalProfiles > 0
       ? (
-          profiles.reduce(
-            (acc, curr) =>
-              acc +
-              (curr.experience || 0),
-            0
-          ) / profiles.length
+          totalExperience /
+          totalProfiles
         ).toFixed(1)
       : 0;
 
-  // ================= SKILL DISTRIBUTION =================
+  // ================= SKILLS =================
 
   const skillMap = {};
 
-  profiles.forEach((profile) => {
+  profiles.forEach(
+    (profile) => {
 
-    profile.skills?.forEach(
-      (skill) => {
+      profile.skills?.forEach(
+        (skill) => {
 
-        skillMap[skill] =
-          (skillMap[skill] || 0) + 1;
-      }
-    );
-  });
+          skillMap[skill] =
+            (skillMap[skill] || 0) + 1;
+        }
+      );
+    }
+  );
 
   const sortedSkills =
     Object.entries(skillMap)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 6);
+      .sort(
+        (a, b) =>
+          b[1] - a[1]
+      );
 
   const skillChartData =
-    sortedSkills.map(
-      ([skill, count]) => ({
-        skill,
-        count,
-      })
-    );
+    sortedSkills
+      .slice(0, 6)
+      .map(
+        ([skill, count]) => ({
+          skill,
+          count,
+        })
+      );
 
   const topSkill =
-    sortedSkills.length > 0
-      ? sortedSkills[0][0]
-      : "No Data";
+    sortedSkills[0]?.[0]
+    || "No Data";
 
-  // ================= DOMAIN MAPPING =================
-
-  const domainMap = {
-
-    Frontend: [
-      "React",
-      "Vue.js",
-      "Angular",
-      "Next.js",
-      "JavaScript",
-      "TypeScript",
-      "Tailwind CSS",
-      "HTML",
-      "CSS",
-    ],
-
-    Backend: [
-      "Node.js",
-      "Express",
-      "Java",
-      "Spring Boot",
-      "REST APIs",
-      "MongoDB",
-      "SQL",
-      "MySQL",
-    ],
-
-    Cloud: [
-      "AWS",
-      "Docker",
-      "Kubernetes",
-      "Azure",
-    ],
-
-    AI_ML: [
-      "Python",
-      "Machine Learning",
-      "TensorFlow",
-      "NLP",
-    ],
-  };
+  // ================= DOMAINS =================
 
   const domainCounts = {
 
@@ -136,115 +189,143 @@ const useInsights = () => {
     AI_ML: 0,
   };
 
-  profiles.forEach((profile) => {
+  profiles.forEach(
+    (profile) => {
 
-    profile.skills?.forEach(
-      (skill) => {
+      profile.skills?.forEach(
+        (skill) => {
 
-        Object.keys(domainMap)
-          .forEach((domain) => {
+          Object.entries(domainMap)
+            .forEach(
+              ([
+                domain,
+                skills,
+              ]) => {
 
-            if (
-              domainMap[domain]
-                .includes(skill)
-            ) {
+                if (
+                  skills.includes(
+                    skill
+                  )
+                ) {
 
-              domainCounts[domain]++;
-            }
-          });
-      }
+                  domainCounts[
+                    domain
+                  ]++;
+                }
+              }
+            );
+        }
+      );
+    }
+  );
+
+  const sortedDomains =
+    Object.entries(
+      domainCounts
+    ).sort(
+      (a, b) =>
+        b[1] - a[1]
     );
-  });
 
   const topHiringDomain =
-    Object.entries(domainCounts)
-      .sort((a, b) => b[1] - a[1])[0]?.[0]
-      || "No Data";
+    sortedDomains[0]?.[0]
+    || "No Data";
 
-  // ================= EXPERIENCE BREAKDOWN =================
-
-  const junior =
-    profiles.filter(
-      (p) => p.experience <= 2
-    ).length;
-
-  const mid =
-    profiles.filter(
-      (p) =>
-        p.experience > 2 &&
-        p.experience <= 5
-    ).length;
-
-  const senior =
-    profiles.filter(
-      (p) => p.experience > 5
-    ).length;
+  // ================= EXPERIENCE =================
 
   const experienceData = [
+
     {
       name: "Junior",
-      value: junior,
+      value: profiles.filter(
+        (profile) =>
+          profile.experience <= 2
+      ).length,
     },
+
     {
       name: "Mid",
-      value: mid,
+      value: profiles.filter(
+        (profile) =>
+          profile.experience > 2 &&
+          profile.experience <= 5
+      ).length,
     },
+
     {
       name: "Senior",
-      value: senior,
+      value: profiles.filter(
+        (profile) =>
+          profile.experience > 5
+      ).length,
     },
   ];
 
-  // ================= EXPERTISE AREAS =================
+  // ================= EXPERTISE =================
 
   const expertiseAreas =
-    Object.entries(domainCounts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3);
+    sortedDomains.slice(0, 3);
 
-  // ================= AI INSIGHT =================
+  // ================= DYNAMIC INSIGHT =================
+
+  const topSkills =
+    sortedSkills
+      .slice(0, 3)
+      .map(([skill]) => skill);
 
   let aiInsight = "";
 
-  if (
+  if (totalProfiles === 0) {
+
+    aiInsight =
+      "Upload candidate resumes to generate talent insights and hiring analytics.";
+  }
+
+  else if (
     topHiringDomain === "Frontend"
   ) {
 
-    aiInsight =
-      "Frontend engineering talent dominates the candidate pool with React and JavaScript emerging as the strongest skills.";
+    aiInsight = `
+      ${topSkills.join(", ")}
+      are currently the strongest frontend capabilities identified across the talent pool.
+    `;
   }
 
   else if (
     topHiringDomain === "Backend"
   ) {
 
-    aiInsight =
-      "Backend engineering talent shows strong demand with Node.js and API development leading the ecosystem.";
+    aiInsight = `
+      ${topSkills.join(", ")}
+      are driving backend engineering demand across candidate profiles.
+    `;
   }
 
   else if (
     topHiringDomain === "Cloud"
   ) {
 
-    aiInsight =
-      "Cloud and infrastructure expertise is rapidly increasing with AWS and Docker becoming highly valuable skills.";
+    aiInsight = `
+      Cloud-focused profiles show growing expertise in
+      ${topSkills.join(", ")}.
+    `;
   }
 
   else if (
     topHiringDomain === "AI_ML"
   ) {
 
-    aiInsight =
-      "AI and Machine Learning talent is gaining momentum with Python and NLP expertise driving innovation.";
+    aiInsight = `
+      AI and Machine Learning profiles are increasingly focused on
+      ${topSkills.join(", ")}.
+    `;
   }
 
   else {
 
     aiInsight =
-      "Candidate distribution is balanced across multiple technical domains.";
+      "Candidate expertise is currently distributed across multiple technical domains.";
   }
-
-  // ================= RETURN =================
 
   return {
 

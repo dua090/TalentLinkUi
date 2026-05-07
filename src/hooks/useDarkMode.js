@@ -5,31 +5,27 @@ import {
 
 const useDarkMode = () => {
 
-  const [
-    darkMode,
-    setDarkMode,
-  ] = useState(false);
+  const [darkMode, setDarkMode] =
+    useState(false);
 
   useEffect(() => {
 
-    const checkDarkMode = () => {
+    const updateDarkMode =
+      () => {
 
-      const isDarkMode =
-        document.documentElement.classList.contains(
-          "dark"
+        setDarkMode(
+          document.documentElement.classList.contains(
+            "dark"
+          )
         );
+      };
 
-      setDarkMode(isDarkMode);
-    };
-
-    // INITIAL CHECK
-
-    checkDarkMode();
-
-    // OBSERVE CLASS CHANGES
+    updateDarkMode();
 
     const observer =
-      new MutationObserver(checkDarkMode);
+      new MutationObserver(
+        updateDarkMode
+      );
 
     observer.observe(
       document.documentElement,
@@ -39,8 +35,9 @@ const useDarkMode = () => {
       }
     );
 
-    return () =>
+    return () => {
       observer.disconnect();
+    };
 
   }, []);
 

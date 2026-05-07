@@ -4,10 +4,29 @@ const CandidateCard = ({
   setSelectedCandidate,
 }) => {
 
+  // ================= MATCH BADGE STYLE =================
+
+  const matchBadgeStyle =
+    candidate.matchPercentage >= 80
+      ? "bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400"
+      : candidate.matchPercentage >= 60
+      ? "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
+      : "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400";
+
+  // ================= MATCH CHECK =================
+
+  const isSkillMatched = (skill) => {
+    return candidate.skills?.some((candidateSkill) =>
+      candidateSkill
+        .toLowerCase()
+        .includes(skill.toLowerCase())
+    );
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition p-6 flex flex-col">
 
-      {/* HEADER */}
+      {/* ================= HEADER ================= */}
 
       <div className="flex items-start justify-between mb-5">
 
@@ -31,24 +50,16 @@ const CandidateCard = ({
           </div>
         </div>
 
-        {/* MATCH */}
+        {/* ================= MATCH ================= */}
 
         <div
-          className={`px-3 py-1 rounded-full text-sm font-semibold
-        
-          ${
-            candidate.matchPercentage >= 80
-              ? "bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400"
-              : candidate.matchPercentage >= 60
-              ? "bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
-              : "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400"
-          }`}
+          className={`px-3 py-1 rounded-full text-sm font-semibold ${matchBadgeStyle}`}
         >
           {candidate.matchPercentage}% Match
         </div>
       </div>
 
-      {/* WHY MATCH */}
+      {/* ================= WHY MATCH ================= */}
 
       <div className="mb-5">
 
@@ -58,39 +69,27 @@ const CandidateCard = ({
 
         <div className="space-y-2">
 
-          {parsedQuery?.skills?.slice(0, 3).map(
-            (skill, index) => {
+          {parsedQuery?.skills?.slice(0, 3).map((skill) => {
 
-              const matched =
-                candidate.skills?.some(
-                  (cSkill) =>
-                    cSkill
-                      .toLowerCase()
-                      .includes(
-                        skill.toLowerCase()
-                      )
-                );
+            const matched = isSkillMatched(skill);
 
-              return (
-                <div
-                  key={index}
-                  className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"
-                >
-                  {matched
-                    ? "✅"
-                    : "❌"}
+            return (
+              <div
+                key={skill}
+                className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"
+              >
+                <span>
+                  {matched ? "✅" : "❌"}
+                </span>
 
-                  <span>
-                    {skill}
-                  </span>
-                </div>
-              );
-            }
-          )}
+                <span>{skill}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* SKILLS */}
+      {/* ================= SKILLS ================= */}
 
       <div className="mb-6">
 
@@ -100,20 +99,16 @@ const CandidateCard = ({
 
         <div className="flex flex-wrap gap-2">
 
-          {candidate.skills
-            ?.slice(0, 4)
-            .map((skill, i) => (
-
-              <span
-                key={i}
-                className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg text-sm font-medium"
-              >
-                {skill}
-              </span>
-            ))}
+          {candidate.skills?.slice(0, 4).map((skill) => (
+            <span
+              key={skill}
+              className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg text-sm font-medium"
+            >
+              {skill}
+            </span>
+          ))}
 
           {candidate.skills?.length > 4 && (
-
             <button
               onClick={() =>
                 setSelectedCandidate(candidate)
@@ -126,7 +121,7 @@ const CandidateCard = ({
         </div>
       </div>
 
-      {/* FOOTER */}
+      {/* ================= FOOTER ================= */}
 
       <div className="mt-auto pt-5 border-t border-gray-100 dark:border-gray-700">
 

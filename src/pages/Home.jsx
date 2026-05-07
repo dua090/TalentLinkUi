@@ -1,6 +1,9 @@
 // src/pages/Home.jsx
 
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+} from "react";
 
 import {
   Brain,
@@ -8,15 +11,19 @@ import {
 
 import AISearchBar from "../components/home/AISearchBar";
 
+import SearchResults from "../components/home/SearchResults";
+
 import CandidateRecommendationModal from "../components/home/CandidateRecommendationModal";
+
+import QuickActions from "../components/home/QuickActions";
+
+import RecentCandidates from "../components/home/RecentCandidates";
 
 import useAISearch from "../hooks/useAISearch";
 
-import SearchResults from "../components/home/SearchResults";
-
 const Home = () => {
 
-  // ================= AI SEARCH HOOK =================
+  // ================= AI SEARCH =================
 
   const {
 
@@ -49,7 +56,7 @@ const Home = () => {
     setDarkMode,
   ] = useState(false);
 
-  // ================= CHECK DARK MODE =================
+  // ================= DARK MODE =================
 
   useEffect(() => {
 
@@ -82,6 +89,7 @@ const Home = () => {
   }, []);
 
   return (
+
     <div className="min-h-screen bg-[#F9FAFB] dark:bg-gray-900 p-6 md:p-8">
 
       {/* ================= HERO ================= */}
@@ -105,10 +113,11 @@ const Home = () => {
             <p className="text-gray-500 dark:text-gray-400 mt-1">
               Discover talent using AI-powered search intelligence
             </p>
+
           </div>
         </div>
 
-        {/* ================= SEARCH ================= */}
+        {/* ================= SEARCH BAR ================= */}
 
         <AISearchBar
           query={query}
@@ -123,16 +132,32 @@ const Home = () => {
 
       {showResults && (
 
-        <SearchResults
-          loading={loading}
-          results={results}
-          parsedQuery={parsedQuery}
-          query={query}
-          setSelectedCandidate={setSelectedCandidate}
-        />
+        <div className="mb-10">
+
+          <SearchResults
+            loading={loading}
+            results={results}
+            parsedQuery={parsedQuery}
+            query={query}
+            setSelectedCandidate={setSelectedCandidate}
+          />
+
+        </div>
       )}
 
-      {/* ================= RECOMMENDATION MODAL ================= */}
+      {/* ================= QUICK ACTIONS ================= */}
+
+      <div className="mb-10">
+
+        <QuickActions />
+
+      </div>
+
+      {/* ================= RECENT TALENT ================= */}
+
+      <RecentCandidates />
+
+      {/* ================= AI MODAL ================= */}
 
       <CandidateRecommendationModal
         selectedCandidate={selectedCandidate}

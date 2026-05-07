@@ -1,10 +1,12 @@
 import ExpertiseCard from "./ExpertiseCard";
-
 import EmptyState from "./EmptyState";
 
 const ExpertiseSection = ({
   expertiseAreas,
 }) => {
+
+  const hasExpertise =
+    expertiseAreas.length > 0;
 
   return (
 
@@ -16,22 +18,28 @@ const ExpertiseSection = ({
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-        {expertiseAreas.length > 0 ? (
+        {hasExpertise ? (
 
           expertiseAreas.map(
-            ([domain, count], index) => (
+            ([domain, count]) => {
 
-              <ExpertiseCard
-                key={index}
-
-                title={domain.replace(
+              const formattedDomain =
+                domain.replace(
                   "_",
                   " & "
-                )}
+                );
 
-                desc={`${count} matching technical skills identified across candidate profiles`}
-              />
-            )
+              return (
+
+                <ExpertiseCard
+                  key={domain}
+
+                  title={formattedDomain}
+
+                  desc={`${count} matching technical skills identified across candidate profiles`}
+                />
+              );
+            }
           )
 
         ) : (

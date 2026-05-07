@@ -1,6 +1,7 @@
 // src/hooks/useTalentPool.js
 
 import {
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -13,8 +14,6 @@ import filterProfiles from "../utils/filterProfiles";
 import generateMatchScoreUtil from "../utils/generateMatchScore";
 
 const useTalentPool = () => {
-
-  // ================= STATES =================
 
   const [profiles, setProfiles] =
     useState([]);
@@ -40,7 +39,7 @@ const useTalentPool = () => {
     setSelectedSkills,
   ] = useState([]);
 
-  // ================= FETCH CANDIDATES =================
+  // ================= FETCH =================
 
   useEffect(() => {
 
@@ -63,7 +62,7 @@ const useTalentPool = () => {
 
           const res =
             await fetch(
-              "http://localhost:5000/api/candidates",
+              `${import.meta.env.VITE_API_URL}/api/candidates`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -82,7 +81,10 @@ const useTalentPool = () => {
 
         } catch (err) {
 
-          console.error(err);
+          console.error(
+            "Failed to fetch candidates:",
+            err
+          );
 
           setProfiles([]);
 
@@ -96,7 +98,7 @@ const useTalentPool = () => {
 
   }, []);
 
-  // ================= UNIQUE SKILLS =================
+  // ================= SKILLS =================
 
   const allSkills =
     useMemo(() => {
@@ -123,58 +125,85 @@ const useTalentPool = () => {
   // ================= TOGGLE SKILL =================
 
   const toggleSkill =
-    (skill) => {
+    useCallback(
+      (skill) => {
 
-      setSelectedSkills(
-        (prev) =>
+        setSelectedSkills(
+          (prev) =>
 
-          prev.includes(skill)
+            prev.includes(skill)
 
-            ? prev.filter(
-                (s) => s !== skill
-              )
+              ? prev.filter(
+                  (s) =>
+                    s !== skill
+                )
 
-            : [...prev, skill]
-      );
-    };
+              : [
+                  ...prev,
+                  skill,
+                ]
+        );
+      },
+      []
+    );
 
   // ================= FILTERED PROFILES =================
 
   const filteredProfiles =
-    filterProfiles({
+    useMemo(
+      () =>
 
-      profiles,
+        filterProfiles({
 
-      search,
+          profiles,
 
-      experienceFilter,
+          search,
 
-      domainFilter,
+          experienceFilter,
 
-      selectedSkills,
+          domainFilter,
 
-      domainMap,
-    });
+          selectedSkills,
+
+          domainMap,
+        }),
+
+      [
+        profiles,
+        search,
+        experienceFilter,
+        domainFilter,
+        selectedSkills,
+      ]
+    );
 
   // ================= MATCH SCORE =================
 
   const generateMatchScore =
-    (profile) =>
+    useCallback(
+      (profile) =>
 
-      generateMatchScoreUtil({
+        generateMatchScoreUtil({
 
-        profile,
+          profile,
 
+          selectedSkills,
+
+          search,
+
+          domainFilter,
+
+          domainMap,
+        }),
+
+      [
         selectedSkills,
-
         search,
-
         domainFilter,
+      ]
+    );
 
-        domainMap,
-      });
-
-  // ================= RESET FILTERS =================
+  // ================= RESET =================
 
   const resetFilters =
     () => {
@@ -191,8 +220,6 @@ const useTalentPool = () => {
 
       setSelectedSkills([]);
     };
-
-  // ================= RETURN =================
 
   return {
 
